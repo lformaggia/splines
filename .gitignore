@@ -1,0 +1,32 @@
+# Build products
+*.o
+*.a
+
+# Autoconf / configure output
+configure
+config.log
+config.status
+autom4te.cache/
+aclocal.m4
+build-aux/
+
+# Generated make/config files
+Makefile
+install_dirs.make
+target_arch.make
+
+# Dependency / intermediate files
+dependency_list.make
+*.expanded
+*.tmp
+*_tmp.f
+*.prj
+
+# Editor and backup files
+*~
+\#*#
+
+# Common runtime leftovers
+core
+a.out
+*.exe

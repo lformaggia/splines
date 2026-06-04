@@ -1,0 +1,442 @@
+#
+# $Id: Makefile.in,v 1.1.1.1 1996/03/05 17:16:33 forma Exp $
+#
+
+.SUFFIXES: .o .c .C .cc .f .F .h .inc .expanded .prj
+
+#----------------------------------------------------------------
+# The information below is modified by the configure script when
+# Makefile is generated from Makefile.in.  You shouldn't normally
+# modify any of this stuff by hand.
+#----------------------------------------------------------------
+
+
+#COMPAT_OBJS =		@LIBOBJS@
+ARCH =			@ARCH@
+CC =			@CC@
+AC_FLAGS =		@DEFS@
+F77 =			@F77@
+F77FLAGS =		@F77FLAGS@
+RANLIB =		@RANLIB@
+SRC_DIR =		@srcdir@
+AC_LIBS = 		@LIBS@
+X_CFLAGS =		@X_CFLAGS@
+X_LIBS =		@X_LIBS@
+X_EXTRA_LIBS =		@X_EXTRA_LIBS@
+SRC_ROOT_DIR =		@SRC_ROOT_DIR@
+INSTALL_DIRS_FILENAME = @INSTALL_DIRS_FILENAME@
+FCPP =			@FCPP@
+C_MYFLAGS = 		@C_MYFLAGS@
+RCS_CO = 		@RCS_CO@
+F77_HIGH_OPT =		@F77_HIGH_OPT@
+F77_DEBUG_OPT =		@F77_DEBUG_OPT@
+INC_PVM_E =		@INC_PVM_E@
+INC_PVM_PD =		@INC_PVM_PD@
+INC_MPI =		@INC_MPI@
+LIB_MPI_EUI =		@LIB_MPI_EUI@
+LIB_MPI_P4 =		@LIB_MPI_P4@
+LIB_PVM_E =		@LIB_PVM_E@
+LIB_PVM_PD =		@LIB_PVM_PD@
+PVM_ROOT =		@PVM_ROOT@
+PVM_ARCH =		@PVM_ARCH@
+TARGET_PLATFORM_LIST =	@TARGET_PLATFORM_LIST@
+#
+# Some versions of make, like SGI's, use the following variable to
+# determine which shell to use for executing commands:
+SHELL =		/bin/sh
+#
+# A few notes:
+# F77 might be modified on the command line of "make all".
+# COMPAT_OBJS  Probably empty for this Makefile.
+# AC_LIBS  Not now used in this particular Makefile.
+# C_MYFLAGS are architecture-dependent, package-dependent defines.
+# If X-Windows is used:
+# X_CFLAGS for compiling
+# X_LIBS   for linking
+# X_EXTRA_LIBS   also for linking
+# Above does not actually list the libraries.
+# The libraries might be  -lXm -lXt -lX11, with Xm less likely.
+#
+# TARGET_ARCH is changed when Makefile calls itself.
+TARGET_ARCH = $(ARCH)
+#
+
+# Default top-level directories in which to install architecture-
+# specific files (exec_prefix) and machine-independent files such
+# as scripts (prefix).
+# (The values specified here CANNOT be overridden at configure-time
+# with the --exec-prefix and --prefix options to the "configure" script
+# because those variables are defined in an include'd file.)
+# The include file defines
+#
+# LIB_DIR, BIN_DIR, INCLUDE_DIR, MAN_DIR
+# MAN1_DIR, MAN3_DIR, MANN_DIR, INFO_DIR, DOCS_DIR
+# HTML_DIR, ARCH_INDEP_LIB_DIR, ARCH_INDEP_BIN_DIR
+#
+# All installation directories are here
+#
+include $(INSTALL_DIRS_FILENAME)
+FINAL_ROOT=/u/flosys3d
+FINAL_LIB_DIR=$(FINAL_ROOT)/lib/$(ARCH)
+FINAL_BIN_DIR=$(FINAL_ROOT)/bin/$(ARCH)
+FINAL_SHELL_DIR=$(FINAL_BIN_DIR)
+FINAL_INCLUDE_DIR=$(FINAL_ROOT)/include/splin3
+# Give location of ftnchek executable.
+FTNCHEK = /u/flosys3d/pub/bin/$(ARCH)/ftnchek
+#FTNCHEK = /usr/crs4/bin/ftnchek
+
+#----------------------------------------------------------------
+# Below are some choices to be made.
+#----------------------------------------------------------------
+
+# Choice of Fortran optimization.
+# Could also choose something different from the ready-made cases
+# of F77_HIGH_OPT and F77_DEBUG_OPT.
+F77_OPT=$(F77_HIGH_OPT)
+#F77_OPT=$(F77_DEBUG_OPT)
+
+# **** USER MODIFIABLE STUFF **
+#
+#
+# Fortran cpp user prescrubed defines.
+# Note, the macro text must include the quote marks when the final
+# piece of text should have quotes.  If the macro name is inside
+# quotes within the text being preprocessed, then substitution
+# will not occur.
+#
+# NUM_DIM= number of dimensions
+# Accordinglty -DTHREE_DIM or -DTWO_DIM
+#
+NUM_DIM=
+FCPP_DEFS_EXTRA =
+#
+# The values of the following macros, used when "all:" is done,
+# are set by target_arch.make, which is created by the makefile itself.
+# TARGET_ARCH INC_PARALLEL LIB_PARALLEL
+# MODE_PARCOMP PARCOMP_TARGET
+# F77 F77_HIGH_OPT F77_DEBUG_OPT
+
+#include	 target_arch.make
+
+#
+# To change the compiler switches, for example to change between
+# -g and -O, for C code, change the following line:
+CFLAGS = -O
+
+# Other user defined include files for cpp and compiling.
+PRODIR=$(SRC_ROOT_DIR)/$(THIS_DIR)
+F77_INCLUDE_EXTRA =
+
+# Extra user defined libraries for linking.
+FLOSYS3DDIR=
+IOLIB=
+F77_LIBS_EXTRA =
+
+# Amount of checking done by ftnchek.
+FTNCHEK_STRICTNESS = \
+ -arguments=3 -array=3 -backslash -common=3 -usage=3
+#FTNCHEK_STRICTNESS = \
+# -arguments=3 -array=3 -backslash -common=3 -usage=3 -novice -portability
+#
+# Fortran 90
+#F77 = xlf90 -qfixed
+#
+#
+#----------------------------------------------------------------
+# The information below should be usable as is.  The configure
+# script won't modify it and you shouldn't need to modify it
+# either.
+#----------------------------------------------------------------
+#
+#
+#PATH=$(PATH):/u/flosys3d/bin:/u/flosys3d/bin/r6k
+#
+# The full switches
+#
+#
+CC_SWITCHES = $(CFLAGS) $(AC_FLAGS) $(C_MYFLAGS)
+
+F77_INCLUDE = $(F77_INCLUDE_EXTRA) -I$(INCLUDE_DIR) $(INC_PARALLEL)
+MAKEDEPEND_INCLUDE = $(F77_INCLUDE)
+
+CPP_PARCOMP = $(MODE_PARCOMP) $(PARCOMP_TARGET)
+FCPP_DEFS = $(FCPP_DEFS_EXTRA) $(CPP_PARCOMP) $(F77_INCLUDE)
+
+# THIS_DIR is not the SRC_DIR (which configure decides to call ".")
+# but rather, the name of the subdirectory under common/src that
+# has the RCS directory for checking-out the file.
+# Also used for installing documentation.
+#
+THIS_DIR=
+#
+F77_SWITCHES = $(F77_OPT) $(F77FLAGS)
+FFLAGS=$(F77_SWITCHES)
+CLINK = $(CC)
+FLINK = $(F77) $(F77_OPT)
+
+#
+# This are the libraries produced by the sources
+#
+LIBRARY_ROOT=splin
+LIBRARY_NAME=lib$(LIBRARY_ROOT).a
+
+F77_LIBS = $(F77_LIBS_EXTRA) $(LIB_PARALLEL) \
+   -L$(SRC_DIR) -l$(LIBRARY_ROOT) \
+   -L$(LIB_DIR)
+C_LIBS =
+#
+# Include files to be put into directory "include" for use
+# in user's own programs.
+# These file names should have the form *_inc.f and the user's
+# program should include the file *.inc, assuming the user
+# wants the option of preprocessing.
+APP_INCLUDES =
+DOC_FILES =
+
+C_MAINPROGS = dummy.c
+F_MAINPROGS =
+#
+
+ALL_OBJS=
+#
+ALL_LIB_OBJS=
+#
+EXE_TO_INSTALL=
+EXE_FOR_CHECK=
+#
+# Myrules.make : user special rules. It defines THE_TARGET
+#
+include myrules.make
+
+all:: $(DEFAULT_TARGET)
+	$(MAKE) TARGET_ARCH=$(ARCH) $(DEFAULT_TARGET)
+$(LIBRARY_NAME): $(ALL_LIB_OBJS)
+	ar rcs $(LIBRARY_NAME) $(ALL_LIB_OBJS)
+	$(RANLIB) $(LIBRARY_NAME)
+#$(EXE_TO_INSTALL): $(LIBRARY_NAME) $(F_MAINOBJS)  
+#	$(FLINK) $(LFLAGS) -o $@ $(F_MAINOBJS) $(F77_LIBS)
+
+
+make_target_arch:
+	echo "TARGET_ARCH=$(TARGET_ARCH)" >target_arch.make
+	echo "F77=$(F77)" >>target_arch.make
+	echo "NUM_DIM=$(NUM_DIM)" >>target_arch.make
+install: install-libraries install-binaries  install-shells 
+install-final: install-libraries-final install-binaries-final install-shells-final install-include-final
+install-binaries: $(EXE_TO_INSTALL)
+	if test ! -d $(BIN_DIR) ; then \
+           mkdir $(BIN_DIR) ; fi
+	@echo "Installing main programs"
+	@set -x ; for i in $(EXE_TO_INSTALL) \
+           ; do \
+              if test -f $$i ; then \
+                  cp $(SRC_DIR)/$$i $(BIN_DIR)/$$i \
+              ; fi \
+        ; done
+
+install-shell: $(SHELLS_TO_INSTALL)
+	if test ! -d $(BIN_DIR)/$(THIS_DIR) ; then \
+           mkdir $(BIN_DIR)/$(THIS_DIR) ; fi
+	@echo "Installing main programs"
+	@set -x ; for i in $(SHELLS_TO_INSTALL) \
+           ; do \
+              if test -f $$i ; then \
+                  cp $(SRC_DIR)/$$i $(BIN_DIR)/$(THIS_DIR)/$$i \
+              ; fi \
+        ; done
+
+install-libraries: $(LIBRARY_NAME)
+	@echo "Installing object library"
+	cp $(SRC_DIR)/$(LIBRARY_NAME) $(LIB_DIR)/$(LIBRARY_NAME)
+
+install-includes: $(APP_INCLUDES)
+	if test ! -d $(INCLUDE_DIR)/$(THIS_DIR) ; then \
+           mkdir $(INCLUDE_DIR)/$(THIS_DIR) ; fi
+	@echo "Installing include files"
+	@set -x ; for i in $(APP_INCLUDES) \
+           ; do \
+              if test -f $(INCLUDE_DIR)/$(THIS_DIR)/$$i ; then \
+                 chmod u+w $(INCLUDE_DIR)/$(THIS_DIR)/$$i \
+              ; fi \
+              ; cp $(SRC_DIR)/$$i $(INCLUDE_DIR)/$(THIS_DIR)/$$i \
+              ; chmod ugo-w $(INCLUDE_DIR)/$(THIS_DIR)/$$i \
+        ; done
+install-binaries-final: $(EXE_TO_INSTALL)
+	if test ! -d $(FINAL_BIN_DIR) ; then \
+           mkdir $(FINAL_BIN_DIR) ; fi
+	@echo "Installing main programs"
+	@set -x ; for i in $(EXE_TO_INSTALL) \
+           ; do \
+              if test -f $$i ; then \
+                  cp $(SRC_DIR)/$$i $(FINAL_BIN_DIR)/$$i \
+              ; fi \
+        ; done
+
+install-shell-final: $(SHELLS_TO_INSTALL)
+	if test ! -d $(FINAL_SHELL_DIR) ; then \
+           mkdir $(FINAL_SHELL_DIR); fi
+	@echo "Installing main programs"
+	@set -x ; for i in $(SHELLS_TO_INSTALL) \
+           ; do \
+              if test -f $$i ; then \
+                  cp $(SRC_DIR)/$$i $(FINAL_SHELL_DIR)/$$i \
+              ; fi \
+        ; done
+
+install-libraries-final: $(LIBRARY_NAME)
+	@echo "Installing object library"
+	cp $(SRC_DIR)/$(LIBRARY_NAME) $(FINAL_LIB_DIR)/$(LIBRARY_NAME)
+
+install-includes-final: $(APP_INCLUDES)
+	if test ! -d $(FINAL_INCLUDE_DIR)/$(THIS_DIR) ; then \
+           mkdir $(FINAL_INCLUDE_DIR)/$(THIS_DIR) ; fi
+	@echo "Installing include files"
+	@set -x ; for i in $(APP_INCLUDES) \
+           ; do \
+              if test -f $(FINAL_INCLUDE_DIR)/$(THIS_DIR)/$$i ; then \
+                 chmod u+w $(FINAL_INCLUDE_DIR)/$(THIS_DIR)/$$i \
+              ; fi \
+              ; cp $(SRC_DIR)/$$i $(FINAL_INCLUDE_DIR)/$(THIS_DIR)/$$i \
+              ; chmod ugo-w $(FINAL_INCLUDE_DIR)/$(THIS_DIR)/$$i \
+        ; done
+
+install-doc: $(DOC_FILES)
+	if test ! -d $(DOCS_DIR)/$(THIS_DIR) ; then \
+           mkdir $(DOCS_DIR)/$(THIS_DIR) ; fi
+	@echo "Installing documentation files"
+	@set -x ; for i in $(DOC_FILES) \
+           ; do \
+              if test -f $(DOCS_DIR)/$(THIS_DIR)/$$i ; then \
+                 chmod u+w $(DOCS_DIR)/$(THIS_DIR)/$$i \
+              ; fi \
+              ; cp $(SRC_DIR)/$$i $(DOCS_DIR)/$(THIS_DIR)/$$i \
+              ; chmod ugo-w $(DOCS_DIR)/$(THIS_DIR)/$$i \
+        ; done
+
+#install-man:
+
+check: $(EXE_FOR_CHECK)
+	@echo "Running test_program"
+	$(EXE_FOR_CHECK)
+
+clean:
+	-rm -f lib*.a *.o core *~ \#* *.exe a.out
+	-rm -f *.tmp *_tmp.f *.expanded
+	-rm -f *.inc
+	-rm -f *.prj
+	-rm -f $(SRC_DIR)/target_arch.make
+	-rm -f $(SRC_DIR)/$(EXE_TO_INSTALL)
+	-rm -f $(SRC_DIR)/$(LIBRARY_NAME)
+	-cd $(SRC_DIR)/docs/code 
+	-cd $(SRC_DIR)/docs ; rm -f *.dvi
+
+
+#
+# Below is not used in this directory.
+# It is shown as an example for C main program.
+#segy_read.exe: $(SEGY_READ_OBJS)
+#	$(CLINK) $(LFLAGS) -o $@ $(SEGY_READ_OBJS) $(COMPAT_OBJS) $(C_LIBS)
+
+#
+#ftnchek: make_sed_include \
+#         ftnchek_setup ftnchek_run
+#ftnchek_setup: $(MULT_TEST_SETUP_PRJS)
+#	$(FTNCHEK) $(FTNCHEK_STRICTNESS) \
+#           -extern -nolibrary $(MULT_TEST_SETUP_PRJS)
+#
+#
+#ftnchek_run: $(MULT_TEST_RUN_PRJS)
+#	$(FTNCHEK) $(FTNCHEK_STRICTNESS) \
+#           -extern -nolibrary $(MULT_TEST_RUN_PRJS)
+
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+depend:
+	echo "$(SRC_ROOT_DIR)/include_make/make_depend_list.per $(MAKEDEPEND_INCLUDE) "
+	$(SRC_ROOT_DIR)/include_make/make_depend_list.perl \
+ $(MAKEDEPEND_INCLUDE) > dependency_list.make
+
+#include dependency_list.make
+
+
+# Note on cpp processing for Fortran include files.
+# The Fortran program should include files with *.inc,
+# but the Fortran include files in RCS and the
+# Fortran include files installed in the "include" directory
+# should have the name *_inc.f .
+
+
+.c.o:
+	$(CC) $(CC_SWITCHES) -c $< -o $@
+
+.f.o:
+	$(F77) $(F77_SWITCHES) -c $< -o $@
+#.f.o:
+#	$(SRC_ROOT_DIR)/include_make/declare_expand.perl \
+#           < $*.f > temp.tmp
+#	$(FCPP) $(FCPP_DEFS) temp.tmp > $*_tmp.f
+#	$(F77) $(F77_SWITCHES) $(F77_INCLUDE) -c $*_tmp.f
+#	mv $*_tmp.o $*.o
+#	@j=0 ; for i in $(F_MAINPROGS) \
+#           ; do \
+#              if [ "$*.f" = "$$i" ] ; then \
+#                 j=1 \
+#              ; fi \
+#        ; done \
+#        ; if [ "$$j" = "1" ] ; then \
+#           echo "Will not archive the main program." \
+#        ; else \
+#           ar rv $(LIBRARY_NAME) $*.o \
+#        ; fi
+
+.f.expanded:
+	$(SRC_ROOT_DIR)/include_make/declare_expand.perl \
+           < $*.f > $*.expanded
+
+.f.prj:
+	sed_include=`cat sed_include.tmp` ; \
+           $(FTNCHEK) $(FTNCHEK_STRICTNESS) \
+           -project -noextern -library $$sed_include $<
+
+# Accomodate people who spell correctly.
+ftncheck: ftnchek
+
+make_sed_include:
+	echo "$(F77_INCLUDE)" | \
+           sed -e "s/-I/-include=/g" > sed_include.tmp
+
+#
+# Revision 1.3  1995/10/02  13:36:17  forma
+# Introduced install-final which installs everithing under the flosys3d structure.
+#
+# Revision 1.2  1995/09/14  07:32:11  forma
+# New path for flosys3d libs.
+#
+# Revision 1.1  1995/06/20  15:45:07  forma
+# mata-makefile to be used with configure
+#
+# Revision 1.1.1.1  1995/05/31  15:41:35  forma
+# Finite Element Preprocessor
+#
+# Revision 1.1  1995/03/21  14:11:45  forma
+# Initial revision
+#
+# Revision 1.3  1995/03/01  11:01:54  forma
+# *** empty log message ***
+#
+# Revision 1.2  1995/02/28  14:09:51  forma
+# *** empty log message ***
+#
+# Revision 1.1  1995/02/13  11:36:18  forma
+# Initial revision
+#
+
+
+
+
+
