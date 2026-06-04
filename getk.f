@@ -43,17 +43,19 @@ c  gives the curvature at the point corresponding to u of
 c  segment is of a  cubic spline
 c
 c
-      real      q(ndimn,*),t(ndimn,*),cs(*)
+      implicit none
+      integer*8 id,ir,is,n,ndimn
+      real*8 a1,a2,clen,cs(*),q(ndimn,*),r12,t(ndimn,*),t1,t2,u,xk
 c
       clen = cs(is)
-      xk = 0.
+      xk = 0.d0
       ir = is+1
       do 10 id=1,ndimn
          r12 = q(id,ir-1) - q(id,ir )
          t1  = t(id,ir-1)
          t2  = t(id,ir  )
-         a1  = 12*r12 + 6*clen*(t1+t2  )
-         a2  = -6*r12 - 2*clen*(2*t1+t2)
+         a1  = 12.d0*r12 + 6.d0*clen*(t1+t2  )
+         a2  = -6.d0*r12 - 2.d0*clen*(2.d0*t1+t2)
          xk  = xk  + (a1*u +  a2)**2
  10   continue
       xk =sqrt(xk)/(clen*clen)

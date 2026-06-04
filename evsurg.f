@@ -45,6 +45,7 @@ C
 C=BLOCK SOURCE
 C
       subroutine evsurg(aps,u,v,ndu,ndv,r,ru,rv,ruv,ruu,rvv,ind)
+      implicit none
 c
 c  it evaluates point position and derivatives corresponding to
 c  the parametric coordinates u,v of a surface patch whose coefficents
@@ -58,26 +59,25 @@ c                        0 all
 c                        1 only r
 c                        2 only r,ru,rv
 c
-      real aps(3,0:*)
-      real r(*),ru(*),rv(*),ruv(*),rvv(*),ruu(*)
-      double precision a1d,a2d,a3d,ud,vd,r1d,r2d,r3d
-c
-      apatch(id,i,j) = aps(id,(j-1)*ndu+i)
+      integer*8 i,ind,ist,j,ndu,ndv
+      real*8 a1,a1d,a2,a2d,a3,a3d,aps(3,0:*),r(*),r1d,r2d,r3d
+      real*8 ru(*),ruu(*),ruv(*),rv(*),rvv(*),u,ud,v,vd,xm
 c
       ud = dble(u)
       vd = dble(v)
       if(ind.eq.-1)go to 100
-      r1d=0.d00
-      r2d=0.d00
-      r3d=0.d00
+      r1d=0.d0
+      r2d=0.d0
+      r3d=0.d0
       do 10 j=ndv,1,-1
-          a1d=0.d00
-          a2d=0.d00
-          a3d=0.d00
+          ist=(j-1)*ndu
+          a1d=0.d0
+          a2d=0.d0
+          a3d=0.d0
           do 11 i=ndu,1,-1
-             a1d  = a1d*ud + dble(apatch(1,i,j))
-             a2d  = a2d*ud + dble(apatch(2,i,j))
-             a3d  = a3d*ud + dble(apatch(3,i,j))
+             a1d  = a1d*ud + aps(1,ist+i)
+             a2d  = a2d*ud + aps(2,ist+i)
+             a3d  = a3d*ud + aps(3,ist+i)
 11        continue
           r1d = r1d*vd + a1d
           r2d = r2d*vd + a2d
@@ -89,22 +89,23 @@ c
 100    continue
        if(ind.eq.1)return
 c
-      ru(1)=0.
-      ru(2)=0.
-      ru(3)=0.
-      rv(1)=0.
-      rv(2)=0.
-      rv(3)=0.
+      ru(1)=0.d0
+      ru(2)=0.d0
+      ru(3)=0.d0
+      rv(1)=0.d0
+      rv(2)=0.d0
+      rv(3)=0.d0
 c
       do 20 j=ndv,1,-1
-          a1=0.
-          a2=0.
-          a3=0.
+          ist=(j-1)*ndu
+          a1=0.d0
+          a2=0.d0
+          a3=0.d0
           do 21 i=ndu,2,-1
              xm = (i-1)
-             a1 = a1*u + apatch(1,i,j)*xm
-             a2 = a2*u + apatch(2,i,j)*xm
-             a3 = a3*u + apatch(3,i,j)*xm
+             a1 = a1*u + aps(1,ist+i)*xm
+             a2 = a2*u + aps(2,ist+i)*xm
+             a3 = a3*u + aps(3,ist+i)*xm
 21        continue
           ru(1) = ru(1)*v +a1
           ru(2) = ru(2)*v +a2
@@ -112,13 +113,14 @@ c
 20     continue
 c
       do 30 j=ndv,2,-1
-          a1=0.
-          a2=0.
-          a3=0.
+          ist=(j-1)*ndu
+          a1=0.d0
+          a2=0.d0
+          a3=0.d0
           do 31 i=ndu,1,-1
-             a1 = a1*u + apatch(1,i,j)
-             a2 = a2*u + apatch(2,i,j)
-             a3 = a3*u + apatch(3,i,j)
+             a1 = a1*u + aps(1,ist+i)
+             a2 = a2*u + aps(2,ist+i)
+             a3 = a3*u + aps(3,ist+i)
 31        continue
           xm = (j-1)
           rv(1) = rv(1)*v +a1*xm
@@ -127,24 +129,25 @@ c
 30     continue
 c
        if(ind.eq.2.or.ind.eq.-1 )return
-       ruv(1)=0.
-       ruv(2)=0.
-       ruv(3)=0.
-       ruu(1)=0.
-       ruu(2)=0.
-       ruu(3)=0.
-       rvv(1)=0.
-       rvv(2)=0.
-       rvv(3)=0.
+       ruv(1)=0.d0
+       ruv(2)=0.d0
+       ruv(3)=0.d0
+       ruu(1)=0.d0
+       ruu(2)=0.d0
+       ruu(3)=0.d0
+       rvv(1)=0.d0
+       rvv(2)=0.d0
+       rvv(3)=0.d0
       do 40 j=ndv,2,-1
-          a1=0.
-          a2=0.
-          a3=0.
+          ist=(j-1)*ndu
+          a1=0.d0
+          a2=0.d0
+          a3=0.d0
           do 41 i=ndu,2,-1
              xm=(i-1)
-             a1 = a1*u + apatch(1,i,j)*xm
-             a2 = a2*u + apatch(2,i,j)*xm
-             a3 = a3*u + apatch(3,i,j)*xm
+             a1 = a1*u + aps(1,ist+i)*xm
+             a2 = a2*u + aps(2,ist+i)*xm
+             a3 = a3*u + aps(3,ist+i)*xm
 41        continue
           xm = (j-1)
           ruv(1) = ruv(1)*v +a1*xm
@@ -153,14 +156,15 @@ c
 40     continue
 c
       do 50 j=ndv,1,-1
-          a1=0.
-          a2=0.
-          a3=0.
+          ist=(j-1)*ndu
+          a1=0.d0
+          a2=0.d0
+          a3=0.d0
           do 51 i=ndu,3,-1
              xm=(i-1)*(i-2)
-             a1 = a1*u + apatch(1,i,j)*xm
-             a2 = a2*u + apatch(2,i,j)*xm
-             a3 = a3*u + apatch(3,i,j)*xm
+             a1 = a1*u + aps(1,ist+i)*xm
+             a2 = a2*u + aps(2,ist+i)*xm
+             a3 = a3*u + aps(3,ist+i)*xm
 51        continue
           ruu(1) = ruu(1)*v +a1
           ruu(2) = ruu(2)*v +a2
@@ -168,13 +172,14 @@ c
 50     continue
 c
       do 60 j=ndv,3,-1
-          a1=0.
-          a2=0.
-          a3=0.
+          ist=(j-1)*ndu
+          a1=0.d0
+          a2=0.d0
+          a3=0.d0
           do 61 i=ndu,1,-1
-             a1 = a1*u + apatch(1,i,j)
-             a2 = a2*u + apatch(2,i,j)
-             a3 = a3*u + apatch(3,i,j)
+             a1 = a1*u + aps(1,ist+i)
+             a2 = a2*u + aps(2,ist+i)
+             a3 = a3*u + aps(3,ist+i)
 61        continue
           xm = (j-1)*(j-2)
           rvv(1) = rvv(1)*v +a1*xm

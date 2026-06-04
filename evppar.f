@@ -24,9 +24,10 @@ C
 C=BLOCK SOURCE
 C
       subroutine evppar(n,m,tanret,choret,coors,apatch,i,j,xl)
-      dimension tanret(3,3,n,m),choret(2,n,m),coors(3,*)
-      dimension apatch(3,4,4)
-      xl=0.5*(choret(1,i,j)+choret(2,i,j))
+      implicit none
+      integer*8 i,j,m,n
+      real*8 apatch(3,4,4),choret(2,n,m),coors(3,*),tanret(3,3,n,m),xl
+      xl=0.5d0*(choret(1,i,j)+choret(2,i,j))
       call evapa2(n,m,3,tanret,choret,coors,apatch,i,j)
       return
       end

@@ -50,13 +50,15 @@ C=BLOCK SOURCE
 C
       subroutine evapa3(n,m,ndimn,tanret,choret,coor,apatch,
      1                  i,j)
+      implicit none
 c
 c evaluates the matrix a of the bicubic patch and stores it into the
 c standard format
 c
 c
-      real tanret(ndimn,3,n,m),choret(2,n,m)
-      real apatch(ndimn,0:*),coor(ndimn,*)
+      integer*8 i,i00,i01,i10,i11,j,k1,k2,m,n,ndimn,iretp
+      real*8 tanret(ndimn,3,n,m),choret(2,n,m)
+      real*8 apatch(ndimn,0:*),coor(ndimn,*),xl1,xl2
 c
       iretp(k1,k2)=(k2-1)*n+k1
 c
@@ -67,8 +69,8 @@ c
 c
 c add header to apatch
 c
-        apatch(1,0) = 4
-        apatch(2,0) = 4
+        apatch(1,0) = 4.d0
+        apatch(2,0) = 4.d0
         if(ndimn.eq.3)then
           i00= iretp(i,j)
           i10= iretp(i+1,j)

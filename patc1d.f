@@ -35,8 +35,10 @@ c
 c  gives the array of coefficents corresponding to
 c  a cubic spline segments
 c
-      real      q(ndimn,*),t(ndimn,*),cs(*)
-      real      apatch(ndimn,4)
+      implicit none
+      integer*8 id,ir,is,ndimn
+      real*8 apatch(ndimn,4),clen,cs(*),q(ndimn,*),r12,t(ndimn,*)
+      real*8 t1,t2
 c
       clen = cs(is)
       ir = is+1

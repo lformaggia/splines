@@ -40,7 +40,9 @@ C
 C=BLOCK SOURCE
 C
       subroutine movt(ndimn,timp,l,tn,k,i,j,n,m)
-      real timp(ndimn,2),tn(ndimn,3,n,m)
+      implicit none
+      integer*8 id,i,j,k,l,m,n,ndimn
+      real*8 timp(ndimn,2),tn(ndimn,3,n,m)
       do 10 id=1,ndimn
          timp(id,l)=tn(id,k,i,j)
 10    continue

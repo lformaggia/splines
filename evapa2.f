@@ -40,6 +40,7 @@ C=BLOCK SOURCE
 C
       subroutine evapa2(n,m,ndimn,tanret,choret,coor,apatch,
      1                  i,j)
+      implicit none
 c
 c evaluates the matrix a of the bicubic patch from
 c the matrix q of the ferguson formulation.
@@ -52,15 +53,17 @@ c (we have preferred a straightforward matrix moltiplication
 c  type of implementation because easier to program, though more
 c  expensive)
 c
-      real q(4,4),tanret(ndimn,3,n,m),choret(2,n,m)
-      real apatch(ndimn,4,4),coor(ndimn,*)
-      real cc(4,4)
+      integer*8 i,i00,i01,i1,i10,i11,id,j,k1,k2,l,m,n,ndimn,iretp
+      real*8 a,ab,ad,b,bc,c,cd,d
+      real*8 q(4,4),tanret(ndimn,3,n,m),choret(2,n,m)
+      real*8 apatch(ndimn,4,4),coor(ndimn,*)
+      real*8 cc(4,4)
 c
       iretp(k1,k2)=(k2-1)*n+k1
-      data cc/1.,0.,-3., 2.,
-     2       0.,0., 3.,-2.,
-     3       0.,1.,-2., 1.,
-     4       0.,0.,-1., 1./
+      data cc/1.d0,0.d0,-3.d0, 2.d0,
+     2       0.d0,0.d0, 3.d0,-2.d0,
+     3       0.d0,1.d0,-2.d0, 1.d0,
+     4       0.d0,0.d0,-1.d0, 1.d0/
 c
 c     if(ispa.eq.0)then
       i00= iretp(i,j)

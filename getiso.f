@@ -53,14 +53,16 @@ C=BLOCK SOURCE
 C
       subroutine getiso(keypa,aps,n,m,iso,value,isn,xln1d,
      1                  narc,marc,msel,ito,ierr)
+      implicit none
 c
-      real aps(3,*),x1(3),x2(3),xln1d(3,msel),coef(3)
+      integer*8 i,iarc,id,ierr,ii,ito,ixx,j,keypa(*),kpa,marc,m
+      integer*8 msel,n,narc,ndu,ndv,npa,isn(marc),jj
+      real*8 aps(3,*),coef(3),u,v,value,x1(3),x2(3),xl,xln1d(3,msel)
+      real*8 xx(3)
 c
 c get isoparametric curve from a surface
 c
-      integer keypa(*),ndu,ndv,i,j,n,m,kpa,isn(marc)
       character*1 iso
-      apatch (id,ii,jj) =aps(id,kpa+(jj-1)*ndu+ii)
 C
       ierr =0
       iarc  =1
@@ -77,21 +79,21 @@ c
           kpa = keypa(npa)
           ndu = aps(1,kpa)
           ndv = aps(2,kpa)
-          call evsurg(aps(1,kpa),0.,v,ndu,ndv,x1,xx,xx,xx,xx,xx,1)
-          call evsurg(aps(1,kpa),1.,v,ndu,ndv,x2,xx,xx,xx,xx,xx,1)
+          call evsurg(aps(1,kpa),0.d0,v,ndu,ndv,x1,xx,xx,xx,xx,xx,1)
+          call evsurg(aps(1,kpa),1.d0,v,ndu,ndv,x2,xx,xx,xx,xx,xx,1)
           xl=sqrt((x2(1)-x1(1))**2+(x2(2)-x1(2))**2+
      1                             (x1(3)-x2(3))**2)
-          xln1d(1,iarc)=ndu
+          xln1d(1,iarc)=dble(ndu)
           xln1d(2,iarc)=xl
           iarc         = iarc + 1
 c
           do 11  ii = 1,ndu
              do 12 id=1,3
-               coef(id) =0.
+               coef(id) =0.d0
 12           continue
              do 13 jj = ndv,1,-1
              do 13 id = 1,3
-               coef(id) = coef(id)*v + apatch(id,ii,jj)
+               coef(id) = coef(id)*v + aps(id,kpa+(jj-1)*ndu+ii)
 13           continue
              if(iarc.gt.msel)then
                 ixx =iarc
@@ -115,21 +117,21 @@ c
           kpa = keypa(npa)
           ndu = aps(1,kpa)
           ndv = aps(2,kpa)
-          call evsurg(aps(1,kpa),u,0.,ndu,ndv,x1,xx,xx,xx,xx,xx,1)
-          call evsurg(aps(1,kpa),u,1.,ndu,ndv,x2,xx,xx,xx,xx,xx,1)
+          call evsurg(aps(1,kpa),u,0.d0,ndu,ndv,x1,xx,xx,xx,xx,xx,1)
+          call evsurg(aps(1,kpa),u,1.d0,ndu,ndv,x2,xx,xx,xx,xx,xx,1)
           xl=sqrt((x2(1)-x1(1))**2+(x2(2)-x1(2))**2+
      1                             (x1(3)-x2(3))**2)
-          xln1d(1,iarc)=ndu
+          xln1d(1,iarc)=dble(ndu)
           xln1d(2,iarc)=xl
           iarc         = iarc + 1
 c
           do 21  jj = 1,ndv
              do 22 id=1,3
-               coef(id) =0.
+               coef(id) =0.d0
 22           continue
              do 23 ii = ndu,1,-1
              do 23 id = 1,3
-               coef(id) = coef(id)*v + apatch(id,ii,jj)
+               coef(id) = coef(id)*u + aps(id,kpa+(jj-1)*ndu+ii)
 23           continue
              if(iarc.gt.msel)then
                 ixx =iarc

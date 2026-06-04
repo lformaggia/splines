@@ -45,12 +45,13 @@ C
 C=BLOCK SOURCE
 C
       subroutine buicur(n,q,t,cs,isn,xln1d,marc,msel,ierr)
+      implicit none
 c
 c builds internal rapresentation for a curve from the arrays q t and cs
 c which describe the curve in terms of a cubic spline
 c
-      integer isn(*)
-      real xln1d(3,*),t(3,n),cs(n),q(3,*)
+      integer*8 i,ierr,inkseg,isn(*),marc,msel,n
+      real*8 cs(n),q(3,*),t(3,n),xln1d(3,*)
 c
       ierr =0
       inkseg  =1
@@ -65,7 +66,7 @@ c
 c
       do 20 i=1,n-1
         isn(i)=inkseg
-        xln1d(1,inkseg)=4
+        xln1d(1,inkseg)=4.d0
         xln1d(2,inkseg)=cs(i)
         inkseg=inkseg+1
         call patc1d(3,xln1d(1,inkseg),q,t,cs,i)

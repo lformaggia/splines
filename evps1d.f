@@ -45,10 +45,12 @@ c
 c  in =0 all in=1 only point in=2 point+ 1st derivative
 c            in=-1 only 1st derivative
 c
-      real xl(3,0:*),xp(3),xd(3),xdd(3),xddd(3)
+      implicit none
+      integer*8 id,in,k,ndeg
+      real*8 sz,u,xddd(3),xdd(3),xd(3),xl(3,0:*),xm,xp(3)
 c
-      sz = 0
-      ndeg = xl(1,0)
+      sz = 0.d0
+      ndeg = int(xl(1,0))
       if(in.eq.-1)go to 31
 c
       do 1 id=1,3
@@ -65,7 +67,7 @@ c
       do 11 id=1,3
 11    xd(id)=(ndeg-1)*xl(id,ndeg)
       do 12 k=ndeg-1,2,-1
-      xm = (k-1)
+      xm = dble(k-1)
       xd(1) = xd(1)*u+xm*xl(1,k)
       xd(2) = xd(2)*u+xm*xl(2,k)
       xd(3) = xd(3)*u+xm*xl(3,k)
@@ -76,7 +78,7 @@ c
       do 21 id=1,3
 21    xdd(id)=0
       do 22 k=ndeg,3,-1
-      xm = (k-1)*(k-2)
+      xm = dble((k-1)*(k-2))
       xdd(1) = xdd(1)*u+xm*xl(1,k)
       xdd(2) = xdd(2)*u+xm*xl(2,k)
       xdd(3) = xdd(3)*u+xm*xl(3,k)
@@ -85,7 +87,7 @@ c
       do 33 id=1,3
 33    xddd(id)=0.
       do 32 k=ndeg,4,-1
-      xm = (k-1)*(k-2)*(k-3)
+      xm = dble((k-1)*(k-2)*(k-3))
       xddd(1) = xddd(1)*u+xm*xl(1,k)
       xddd(2) = xddd(2)*u+xm*xl(2,k)
       xddd(3) = xddd(3)*u+xm*xl(3,k)

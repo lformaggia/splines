@@ -109,8 +109,9 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      real  function xmin1d(ax,bx,cx,xmin,n,xln1d,isn,xp,r,
+      real*8 function xmin1d(ax,bx,cx,xmin,n,xln1d,isn,xp,r,
      1                      du,imes,utl,distl,ftl,zerom)
+      implicit none
 c
 c this routine finds the minimum of the function
 c
@@ -120,9 +121,11 @@ c where xp is a point on the 3d space and r a point on the spline
 c whose patches are contained into xln1d it makes use of the routine
 c for 1d search on numerical recipes (dbrent)
 c
-      real xln1d(3,*),xp(3),r(3),fundis
-      integer isn(*)
-      parameter (itmax=100,zeps=1.0e-10)
+      integer*8 imes,isn(*),iter,itmax,n
+      real*8 a,ax,b,bx,cx,d,d1,d2,distl,du,dv,dw,dx,e,ftl,fu,fundis
+      real*8 fv,fw,fx,olde,tol1,tol2,u,u1,u2,utl,uu0,v,w,x,xln1d(3,*)
+      real*8 xmin,xm,xp(3),r(3),zerom,zeps
+      parameter (itmax=100,zeps=1.0d-10)
       logical ok1,ok2
       a=min(ax,cx)
       b=max(ax,cx)
@@ -130,34 +133,34 @@ c
       v=bx
       w=v
       x=v
-      e=0.
+      e=0.d0
       fx=fundis(x,xln1d,isn,n,dx,xp,r)
       fv=fx
       fw=fx
       dv=dx
       dw=dx
 c
-      uu0=-1.e+30
+      uu0=-1.d30
       do 11 iter=1,itmax
-        xm=0.5*(a+b)
+        xm=0.5d0*(a+b)
         tol1=utl*abs(x)+zeps
-        tol2=2.*tol1
+        tol2=2.d0*tol1
         if(fx.lt.distl)then
            goto 3
         endif
-        if(abs(x-xm).le.(tol2-.5*(b-a)))then
+        if(abs(x-xm).le.(tol2-.5d0*(b-a)))then
             imes=2
             goto 3
         endif
         if(abs(e).gt.tol1) then
-          d1=2.*(b-a)
+          d1=2.d0*(b-a)
           d2=d1
           if(dw.ne.dx) d1=(w-x)*dx/(dx-dw)
           if(dv.ne.dx) d2=(v-x)*dx/(dx-dv)
           u1=x+d1
           u2=x+d2
-          ok1=((a-u1)*(u1-b).gt.0.).and.(dx*d1.le.0.)
-          ok2=((a-u2)*(u2-b).gt.0.).and.(dx*d2.le.0.)
+          ok1=((a-u1)*(u1-b).gt.0.d0).and.(dx*d1.le.0.d0)
+          ok2=((a-u2)*(u2-b).gt.0.d0).and.(dx*d2.le.0.d0)
           olde=e
           e=d
           if(.not.(ok1.or.ok2))then
@@ -173,20 +176,20 @@ c
           else
             d=d2
           endif
-          if(abs(d).gt.abs(0.5*olde))go to 1
+          if(abs(d).gt.abs(0.5d0*olde))go to 1
           u=x+d
           if(u-a.lt.tol2 .or. b-u.lt.tol2) d=sign(tol1,xm-x)
           goto 2
         endif
-1       if(dx.ge.0.) then
+1       if(dx.ge.0.d0) then
           e=a-x
         else
           e=b-x
         endif
-        d=0.5*e
+        d=0.5d0*e
 2       if(abs(d).ge.tol1) then
           u=x+d
-          u=max(0.,min(u,float(n)))
+          u=max(0.d0,min(u,dble(n)))
           fu=fundis(u,xln1d,isn,n,du,xp,r)
 c          if(2*abs(u-uu0).lt.zerom*(abs(u)+abs(uu0)))then
 c             imes=-2
@@ -194,7 +197,7 @@ c             go to 99
 c          endif
         else
           u=x+sign(tol1,d)
-          u=max(0.,min(u,float(n)))
+          u=max(0.d0,min(u,dble(n)))
           fu=fundis(u,xln1d,isn,n,du,xp,r)
           if(fu.gt.fx)go to 3
 c          if(2*abs(u-uu0).lt.zerom*(abs(u)+abs(uu0)))then
@@ -242,7 +245,7 @@ c          endif
 c
       if(imes.eq.0)then
          if(fx.lt.distl)goto3
-         if(2*abs(fv-fw).lt.ftl*(abs(fv)+abs(fw)))then
+         if(2.d0*abs(fv-fw).lt.ftl*(abs(fv)+abs(fw)))then
            imes =1
          else
            imes=-1

@@ -41,21 +41,22 @@ C
 C=BLOCK SOURCE
 C
       subroutine gtimp(ndimn,timp,q,n,is)
-      parameter(zero=1.e-10)
-c
-      real timp(ndimn,2),q(ndimn,*)
+      implicit none
+      integer*8 i,id,is,n,ndimn
+      real*8 q(ndimn,*),timp(ndimn,2),x1,zero
+      parameter(zero=1.d-10)
 c
       if(is.eq.1)i=1
       if(is.eq.2)i=n-1
-      x1 = 0.
+      x1 = 0.d0
       do 10 id=1,ndimn
          timp(id,is)=q(id,i+1) - q(id,i)
          x1         =x1 + timp(id,is)**2
 10    continue
       if(x1.lt.zero)then
-         x1=1.
+         x1=1.d0
       else
-         x1 = 1./sqrt(x1)
+         x1 = 1.d0/sqrt(x1)
       endif
       do 20  id=1,ndimn
          timp(id,is)=timp(id,is)*x1

@@ -58,8 +58,9 @@ C=BLOCK SOURCE
 C
       subroutine builtg(kfio,ksio,indg,inds,nsseg,nssur,mseg,msur,ierr,
      1                  iendc)
-      integer indg(mseg),inds(msur)
-      integer ios
+      implicit none
+      integer*8 ierr,iendc,indg(mseg),inds(msur),ios
+      integer*8 key,kfio,ksio,m,mseg,msur,n,ng,nsseg,nssur
 c
 c it sweeps over the file of keys in the DB and reports the
 c number of records and the local to global array

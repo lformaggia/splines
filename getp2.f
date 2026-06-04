@@ -54,34 +54,36 @@ c  x    =  point location         xd  = 1st derivative = dx/du
 c  xdd  =  d2x/du2                xddd= d3x/du3
 c  s    = | xd |                  in = normalization switch:
 c                                  /=0 -> xd = dx/ds
-      real      q(ndimn,*),t(ndimn,*) ,cs(*)
-      real      x(ndimn),xd(ndimn),xdd(ndimn),xddd(ndimn)
+      implicit none
+      integer*8 i,id,in,ir,is,n,ndimn
+      real*8 a1,a2,a3,clen,cs(*),q(ndimn,*),r12,s,s1,t(ndimn,*)
+      real*8 t1,t2,u,x(ndimn),xd(ndimn),xdd(ndimn),xddd(ndimn)
 c
-      s  = 0.
+      s  = 0.d0
       ir = is+1
       clen = cs(is)
       do 10 id=1,ndimn
          r12 = q(id,ir-1) - q(id,ir )
          t1  = t(id,ir-1)
          t2  = t(id,ir  )
-         a1  =  2*r12 + clen*(t1+t2)
-         a2  = -3*r12 - clen*(2*t1+t2)
+         a1  =  2.d0*r12 + clen*(t1+t2)
+         a2  = -3.d0*r12 - clen*(2.d0*t1+t2)
          a3  =  clen*t1
          x(id)=
      1         ( ( a1                        *u +
      1             a2                       )*u +
      1             a3                       )*u +
      1              q(id,ir-1)
-         xd(id)= ( 3*a1                      *u +
-     1             2*a2                     )*u +
+         xd(id)= ( 3.d0*a1                   *u +
+     1             2.d0*a2                  )*u +
      1               a3
-         xdd(id) =   6*a1*u + 2*a2
-         xddd(id)=   6*a1
+         xdd(id) =   6.d0*a1*u + 2.d0*a2
+         xddd(id)=   6.d0*a1
          s       =   s + xd(id)**2
  10   continue
       s  = sqrt(s)
       if (in.ne.0)then
-        s1=1./s
+        s1=1.d0/s
         do 30 i=1,ndimn
 30      xd(i)  = xd(i)*s1
       endif

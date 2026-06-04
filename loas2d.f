@@ -55,8 +55,11 @@ C=BLOCK SOURCE
 C
       subroutine loas2d(keypa,aps,msul,mpat,isur,igsur,ib,n,m,
      1                  kfio,ifio,ips,ito,ierr)
-      integer keypa(mpat)
-      real    aps(3,msul)
+      implicit none
+      integer*8 ax_dummy,ib,ifio, ierr,igsur,i,ii,if_dummy,ips,isur
+      integer*8 ito,j,jj,key,keypa(mpat),kfio,m,mpat,msul,n,npa
+      integer*8 ndu,ndv
+      real*8 aps(3,msul),ax,ay,az,xl
       ierr =0
       ips=0
       read(kfio,rec=isur)key,n,m,igsur,ib
@@ -77,8 +80,8 @@ c
          ips = ips +1
          if(npa.le.mpat)keypa(npa)=ips
          read(ifio,rec=key+ips)ndu,ndv,xl
-         aps(1,ips)=ndu
-         aps(2,ips)=ndv
+         aps(1,ips)=dble(ndu)
+         aps(2,ips)=dble(ndv)
          aps(3,ips)=xl
          do 20 jj=1,ndv
          do 20 ii=1,ndu

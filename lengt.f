@@ -48,8 +48,11 @@ c
 c *** this sub. computes the length of a segment of a cubic.
 c     using a romberg adaptive integration
 c
-      if(u1-u2.eq.0.)then
-         s=0.
+      implicit none
+      integer*8 in
+      real*8 a1,a2,a3,a4,a5,eps,s,u1,u2
+      if(u1-u2.eq.0.d0)then
+         s=0.d0
       else
          call qrombs(a1,a2,a3,a4,a5,u1,u2,s,eps)
       endif
@@ -77,8 +80,10 @@ C
 C=END ABSTRACT
 C=BLOCK SOURCE
       subroutine polints(xa,ya,n,x,y,dy)
-      parameter (nmax=10) 
-      dimension xa(n),ya(n),c(nmax),d(nmax)
+      implicit none
+      integer*8 i,m,n,nmax,ns
+      real*8 c(10),d(10),den,dif,dift,dy,ho,hp,w,x,y,xa(n),ya(n)
+      parameter (nmax=10)
       ns=1
       dif=abs(x-xa(1))
       do 11 i=1,n 
@@ -98,7 +103,7 @@ C=BLOCK SOURCE
           hp=xa(i+m)-x
           w=c(i+1)-d(i)
           den=ho-hp
-          if(den.eq.0.)then
+          if(den.eq.0.d0)then
              print*,'POLINTS: E001:  Error'
              return
           endif
@@ -118,47 +123,52 @@ C=BLOCK SOURCE
       end
 
       subroutine trapzds(a1,a2,a3,a4,a5,a,b,s,n)
+      implicit none
+      integer*8 it,j,n
+      real*8 a,a1,a2,a3,a4,a5,b,del,fleft,fright,s,sum,tnm,x
       save it
-      func(u1) = sqrt(a1+u1*(a2+u1*(a3+u1*(a4+u1*a5))))
 c
       if (n.eq.1) then
-        s=0.5*(b-a)*(func(a)+func(b))
+        fleft = sqrt(a1+a*(a2+a*(a3+a*(a4+a*a5))))
+        fright = sqrt(a1+b*(a2+b*(a3+b*(a4+b*a5))))
+        s=0.5d0*(b-a)*(fleft+fright)
         it=1
       else
         tnm=it
         del=(b-a)/tnm
-        x=a+0.5*del
-        sum=0.
+        x=a+0.5d0*del
+        sum=0.d0
         do 11 j=1,it
-          sum=sum+func(x)
+          sum=sum+sqrt(a1+x*(a2+x*(a3+x*(a4+x*a5))))
           x=x+del
 11      continue
-        s=0.5*(s+(b-a)*sum/tnm)
+        s=0.5d0*(s+(b-a)*sum/tnm)
         it=2*it
       endif
       return
       end
 
       subroutine qrombs(a1,a2,a3,a4,a5,a,b,ss,eps)
+      implicit none
+      integer*8 j,jmax,jmaxp,k,km
+      real*8 a,a1,a2,a3,a4,a5,b,dss,eps,fltmin,h(21),s(21),ss
       parameter (jmax=20, jmaxp=jmax+1, k=2, km=k-1)
-      parameter (FLTMIN=1.e-30)
-      dimension s(jmaxp),h(jmaxp)
-      h(1)=1.
+      parameter (FLTMIN=1.d-30)
+      h(1)=1.d0
       do 11 j=1,jmax
         call trapzds(a1,a2,a3,a4,a5,a,b,s(j),j)
         if (j.ge.k) then
-          call polints(h(j-km),s(j-km),k,0.,ss,dss)
+          call polints(h(j-km),s(j-km),k,0.d0,ss,dss)
           if (abs(dss).le.eps*abs(ss).or.
      $         (j.gt.2.and.abs(dss).lt.FLTMIN)) return
         endif
         s(j+1)=s(j)
-        h(j+1)=0.25*h(j)
+        h(j+1)=0.25d0*h(j)
 11    continue
       print*,  'QROMBS: too many steps.'
       end
 C=END SOURCE
 C=END DECK
-
 
 
 

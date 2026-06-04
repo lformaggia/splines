@@ -106,9 +106,10 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      real  function xminli(utl,xmin,xp,r,z,ugs,vgs,xi,ru,rv,
+      real*8 function xminli(utl,xmin,xp,r,z,ugs,vgs,xi,ru,rv,
      1                      der,g,u10,v10,u20,v20,ug,vg,n,m,keypa,
      1                      aps, imes,zerom,distl,ind)
+      implicit none
 c
 c this routine finds the minimum of the distance function
 c
@@ -122,13 +123,12 @@ c xp is fixed a point in the 3d space and r a point on the spline surface
 c it is a modificationof the routine for 1d search
 c in numerical recipes (brent)
 c
-      real aps(3,*),xp(3),r(3),distps
-      real z(3),xi(2),ru(3),rv(3)
-      real der,g(2)
-      integer keypa(*)
-      parameter (itmax=100,zeps=1.0e-10,cgold=.3819660)
-      ugl(q) = max(u10,min(q,u20))
-      vgl(q) = max(v10,min(q,v20))
+      integer*8 imes,ind,itmax,iter,keypa(*),m,n
+      real*8 a,aps(3,*),ax,b,bl1,bl2,blx,bx,cgold,cx,d,der,distl
+      real*8 distps,dx,e,etemp,fa,fb,fc,fu,fv,fw,fx,g(2),p,q,r(3)
+      real*8 rr,tol1,tol2,u,u10,u20,ug,ugs,utl,v,v10,v20,vg,vgs,w,x
+      real*8 xi(2),xmin,xm,xp(3),z(3),ru(3),rv(3),zerom,zeps
+      parameter (itmax=100,zeps=1.0d-10,cgold=.3819660d0)
 c
       imes=0
 c
@@ -154,7 +154,7 @@ c
       v=bx
       w=v
       x=v
-      e=0.
+      e=0.d0
       fx=distps(xp,ugs,vgs,xi,x,keypa,aps,n,m,z,r,der,g,
      1                     ru,rv,ug,vg,0)
 c
@@ -162,7 +162,7 @@ c
          goto 3
       endif
 c
-      if(2*(b-a).le.utl*(abs(a)+abs(b)))then
+      if(2.d0*(b-a).le.utl*(abs(a)+abs(b)))then
 c
 c we have reached an extrema
 c
@@ -174,13 +174,13 @@ c
       fw=fx
 c
       do 11 iter=1,itmax
-        xm=0.5*(a+b)
+        xm=0.5d0*(a+b)
         tol1=utl*abs(x)+zeps
-        tol2=2.*tol1
+        tol2=2.d0*tol1
 c
 c convergence up to tol
 c
-        if(abs(x-xm).le.(tol2-.5*(b-a)))then
+        if(abs(x-xm).le.(tol2-.5d0*(b-a)))then
            imes =2
            goto 3
         endif
@@ -191,12 +191,12 @@ c
           rr=(x-w)*(fx-fv)
           q=(x-v)*(fx-fw)
           p=(x-v)*q-(x-w)*rr
-          q=2.*(q-rr)
-          if(q.gt.0.) p=-p
+          q=2.d0*(q-rr)
+          if(q.gt.0.d0) p=-p
           q=abs(q)
           etemp=e
           e=d
-          if(abs(p).ge.abs(.5*q*etemp).or.p.le.q*(a-x).or.
+          if(abs(p).ge.abs(.5d0*q*etemp).or.p.le.q*(a-x).or.
      *        p.ge.q*(b-x)) goto 1
 c
 c if parabolic step is ok: take it going to 1
@@ -265,8 +265,8 @@ c
 c normal termination
 c
 3     xmin=max(bl1,min(x,bl2))
-      ug=ugl(ugs+xmin*xi(1))
-      vg=vgl(vgs+xmin*xi(2))
+      ug=max(u10,min(ugs+xmin*xi(1),u20))
+      vg=max(v10,min(vgs+xmin*xi(2),v20))
       xminli=fx
       return
       end

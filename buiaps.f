@@ -45,10 +45,12 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      subroutine buiaps(n,m,tanret,choret,coor,keypa,lastpa,aps,mpatch
+      subroutine buiaps(n,m,tanret,choret,coor,keypa,lastpa,aps,mpatch,
      1                  msul,ierr)
-      dimension tanret(3,3,n,m),choret(2,n,m),coor(3,*)
-      dimension apatch(3,4,4),aps(3,*),keypa(*)
+      implicit none
+      integer*8 i,id,ierr,ii,j,jj,keypa(*),lastpa,m,mpatch,msul,n,npa
+      real*8 tanret(3,3,n,m),choret(2,n,m),coor(3,*)
+      real*8 apatch(3,4,4),aps(3,*),xl
 c
 c check
 c

@@ -77,15 +77,14 @@ C=BLOCK SOURCE
 C
       subroutine pspli2(ndimn,n,q,t,cs,
      1                  ispty,a,b,c,niv,rxy)
+      implicit none
+      integer*8 mdimn,n,ndimn,niv,ispty(2)
       parameter(mdimn=8)
+      real*8 q(ndimn,*),t(ndimn,*),cs(*),timp(2*mdimn)
+      real*8 a(*),b(*),c(*),rxy(niv,*)
 c
 c  new version rxy are the point coordinates q is the
 c  values to interpolate
-c
-      real      q(ndimn,*),t(ndimn,*),cs(*)
-      real      timp(2*mdimn)
-      real      a(*),b(*),c(*),rxy(niv,*)
-      integer   ispty(2)
 c
 c evaluate chord length
 c
@@ -96,10 +95,10 @@ c
       if(ispty(1).eq.1)call gtimp(ndimn,timp,q,n,1)
       if(ispty(2).eq.1)call gtimp(ndimn,timp,q,n,2)
       if(ispty(1).eq.2)then
-        call putimp(ndimn,timp,1,t,1)
+        call putimp(ndimn,timp,1_8,t,1_8)
       endif
       if(ispty(2).eq.2)then
-        call putimp(ndimn,timp,2,t,n)
+        call putimp(ndimn,timp,2_8,t,n)
       endif
 c
 c evaluate tangents

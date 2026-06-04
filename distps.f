@@ -69,32 +69,30 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      real function distps(xp,ugs,vgs,xi,beta,keypa,aps,n,m,z,r,der,g,
-     1                     ru,rv,ug,vg,ind)
-      parameter(zeps=1.e-32)
-      real aps(3,*),z(3),xi(2),r(3),ru(3),rv(3),ruu(3)
-      real ruv(3),rvv(3),xp(3),g(2)
-      integer keypa(*),ipa,jpa
-      ipa(a) = min(max(1,int(a)),n-1)
-      jpa(a) = min(max(1,int(a)),m-1)
-      npa(i,j) = (i-1)*(m-1) + j
+      real*8 function distps(xp,ugs,vgs,xi,beta,keypa,aps,n,m,z,r,der,
+     1                       g,ru,rv,ug,vg,ind)
+      implicit none
+      integer*8 i,id,ind,j,keypa(*),kpa,m,n,ndu,ndv
+      real*8 aps(3,*),beta,der,g(2),r(3),ru(3),ruu(3),ruv(3),rv(3)
+      real*8 rvv(3),u,ug,ugs,v,vg,vgs,xi(2),xp(3),z(3),xxx,zeps
+      parameter(zeps=1.d-32)
 c
       ug = ugs + beta*xi(1)
       vg = vgs + beta*xi(2)
 c
-      i = ipa(ug)
-      j = jpa(vg)
-      u = ug - float(i)
-      v = vg - float(j)
+      i = min(max(1,int(ug)),n-1)
+      j = min(max(1,int(vg)),m-1)
+      u = ug - dble(i)
+      v = vg - dble(j)
 c
 c make sure u,v,ug,and vg are within correct bounds
 c
-      u = max(min(u,1.),0.)
-      v = max(min(v,1.),0.)
-      ug = i + u
-      vg = j + v
+      u = max(min(u,1.d0),0.d0)
+      v = max(min(v,1.d0),0.d0)
+      ug = dble(i) + u
+      vg = dble(j) + v
 c
-      kpa = keypa(npa(i,j))
+      kpa = keypa((i-1)*(m-1)+j)
       ndu = int(aps(1,kpa))
       ndv = int(aps(2,kpa))
       if(ind.eq.0)then
@@ -114,9 +112,9 @@ c
 c
 c evaluate derivative along xi
 c
-      g(1) = 2*(z(1)*ru(1)+z(2)*ru(2)+z(3)*ru(3))
-      g(2) = 2*(z(1)*rv(1)+z(2)*rv(2)+z(3)*rv(3))
-      xxx  = 1./max(distps,zeps)
+      g(1) = 2.d0*(z(1)*ru(1)+z(2)*ru(2)+z(3)*ru(3))
+      g(2) = 2.d0*(z(1)*rv(1)+z(2)*rv(2)+z(3)*rv(3))
+      xxx  = 1.d0/max(distps,zeps)
       g(1) = xxx*g(1)
       g(2) = xxx*g(2)
       der  = g(1)*xi(1) + g(2)*xi(2)

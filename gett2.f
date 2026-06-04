@@ -35,8 +35,10 @@ C
 c
 c get tangent t= dx/ds
 c
-      real t(ndimn),xd(ndimn),s
-      s1 = 1./s
+      implicit none
+      integer*8 i,ndimn
+      real*8 s,s1,t(ndimn),xd(ndimn)
+      s1 = 1.d0/s
       do 10 i=1,ndimn
 10    t(i) = xd(i)*s1
       return

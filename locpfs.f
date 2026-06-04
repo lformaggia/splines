@@ -1,9 +1,13 @@
-       subroutine locpfs(ndimn,n,x,q,cs,t,ugs,u1,u2,ug,r,v,dist,imes)
-       parameter(eps1=0.001,mit=6,mdimn=3)
-       parameter(eps2=0.001,eps3=0.001)
-       real cs(*),q(ndimn,*),t(ndimn,*),x(ndimn)
-       real h,r(mdimn),rd(mdimn),rdd(mdimn),rddd(mdimn)
-       real xnn(mdimn),xnb(mdimn),v(mdimn)
+      subroutine locpfs(ndimn,n,x,q,cs,t,ugs,u1,u2,ug,r,v,dist,imes)
+      implicit none
+      integer*8 id,imes,is,n,ndimn
+      real*8 beta,cs(*),da,dist,eps1,eps2,eps3,h,q(ndimn,*),r(3)
+      real*8 rdd(3),rddd(3),rd(3),s,t(ndimn,*),u,u1,u2
+      real*8 ug,ug0,ugs,v(3),x(ndimn),xden,xd,xnb(3),xnn(3)
+      real*8 xl,xpp
+      integer*8 mit
+      parameter(eps1=0.001d0,mit=6)
+      parameter(eps2=0.001d0,eps3=0.001d0)
 c
 c this routine evaluates the point r  on a ferguson spline
 c which is nearest to the fixed point x
@@ -21,9 +25,9 @@ c       imes =-2 extrema reached
 c
        imes = 0
        is   =min(int(ugs),n-1)
-        u   = ugs - is
+        u   = ugs - dble(is)
        ug  = ugs
-       ug0   = -10
+       ug0   = -10.d0
 c
 c start Newton iterations
 c
@@ -33,8 +37,8 @@ c
 c get point and gradients
 c
        call getp2(ndimn,n,q,t,cs,is,u,r,rd,rdd,rddd,s,0)
-       h = 0
-       dist = 0
+       h = 0.d0
+       dist = 0.d0
        do 10 id=1,ndimn
         v(id) = (r(id) - x(id))
          h = h +   v(id)*rd(id)
@@ -64,10 +68,10 @@ c
        endif
        ug0= ug
        h = h/beta
-       da = 0
+       da = 0.d0
 c      do 30 nit = 1,mit
-       xden =0.
-       xpp  =0.
+       xden =0.d0
+       xpp  =0.d0
        do 40 id=1,ndimn
           xden = xden + rd(id)*rd(id)
           xpp  = xpp  + v(id)*rdd(id)
@@ -77,11 +81,11 @@ c      do 30 nit = 1,mit
 c
 c dont let ug step over more than 1 segment
 c
-       if(abs(da).gt.1.)da = sign(1.,da)
+       if(abs(da).gt.1.d0)da = sign(1.d0,da)
        ug = ug +da*h
        ug = min(u2      ,max(u1,ug ))
        is = min(int(ug),n-1)
-       u  = ug - is
+       u  = ug - dble(is)
        go to 1000
        return
        end

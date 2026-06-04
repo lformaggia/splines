@@ -44,23 +44,25 @@ C
 C=BLOCK SOURCE
 C
       subroutine xmaxpa(n,m,keypa,aps,xmax,np,c3d)
+      implicit none
 c
 c find max coordinates of the point on a surface
 c
-      real aps(3,*),xmax(3,2),xp(3),c3d(3,*)
-      integer keypa(*)
+      integer*8 i,id,j,k,kku,kkv,keypa(*),kpa,ku,kv,m,n,npa,np,nu,nv
+      real*8 aps(3,*),c3d(3,*),u,v,xmax(3,2),xp(3),xx(3)
 c
       np =0
+      k  =0
       do 10 id=1,3
-        xmax(id,1)= 1.e+32
-        xmax(id,2)= -1.e+32
+        xmax(id,1)= 1.d32
+        xmax(id,2)=-1.d32
 10     continue
 c
        do 500 j=1,m-1
          kkv=0
          if(j.eq.m-1)kkv=1
          do 530 kv=0,kkv
-           v= float(kv)
+           v=dble(kv)
            do 510 i=1,n-1
              kku =0
              if(i.eq.n-1)kku=1
@@ -69,7 +71,7 @@ c
              nu = aps(1,kpa)
              nv = aps(2,kpa)
              do 510 ku=0,kku
-               u=float(ku)
+               u=dble(ku)
                k = k +1
                call evsurg(aps(1,kpa),u,v,nu,nv,xp,
      1                               xx,xx,xx,xx,xx,1)
@@ -94,4 +96,3 @@ C=END SOURCE
 C
 C=END DECK
 c
-

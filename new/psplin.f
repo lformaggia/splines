@@ -74,12 +74,12 @@ C=BLOCK SOURCE
 C
       subroutine psplin(ndimn,n,q,t,cs,len,
      1                  ispty,a,b,c)
-      parameter(eps=0.02,mdimn=8)
-c
-      real      q(ndimn,*),t(ndimn,*),cs(*)
-      real      len(*),timp(2*mdimn)
-      real      a(*),b(*),c(*)
-      integer   ispty(2)
+      implicit none
+      integer*8 mdimn,n,ndimn,ispty(2)
+      real*8 eps
+      parameter(eps=0.02d0,mdimn=8)
+      real*8 q(ndimn,*),t(ndimn,*),cs(*),len(*),timp(2*mdimn)
+      real*8 a(*),b(*),c(*)
 c
 c evaluate chord length
 c
@@ -90,10 +90,10 @@ c
       if(ispty(1).eq.1)call gtimp(ndimn,timp,q,n,1)
       if(ispty(2).eq.1)call gtimp(ndimn,timp,q,n,2)
       if(ispty(1).eq.2)then
-        call putimp(ndimn,timp,1,t,1)
+        call putimp(ndimn,timp,1_8,t,1_8)
       endif
       if(ispty(2).eq.2)then
-        call putimp(ndimn,timp,2,t,n)
+        call putimp(ndimn,timp,2_8,t,n)
       endif
 c
 c evaluate tangents

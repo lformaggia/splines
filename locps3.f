@@ -1,20 +1,17 @@
       subroutine locps3(n,m,keypa,aps,xp,ug,vg,u10,u20,v10,v20,
      1                  r,z,dist,imes,iter,tole,distl)
-      parameter(itmax=100,zerom=1.e-6,tol=zerom,eps=zerom)
+      implicit none
+      integer*8 i,ibig,imes,ierr,iter,itmax,itry,j,keypa(*),kpa,m,n,npa
+      integer*8 ndu,ndv
+      real*8 aa,aps(3,*),del,der,dist,distl,disto,eps,fp,fptt,fret,fret0
+      real*8 g(2),p(2),pt(2),ptt(2),r(3),ru(3),rv(3),t,tol,tole,toler
+      real*8 u,u1,u10,u2,u20,ug,ugk,ugn,ugs,v,v1,v10,v2,v20,vg,vgk
+      real*8 vgn,vgs,xi(2,2),xinit(2,2,2),xit(2),xl,xmin,xp(3),z(3)
+      real*8 zerom,distps,xminli
+      parameter(itmax=100,zerom=1.d-6,tol=zerom,eps=zerom)
 c
-      real xp(3),r(3),z(3),xi(2,2),g(2)
-      real ru(3),rv(3),xinit(2,2,2)
-      real xit(2),p(2),pt(2),ptt(2)
-      integer keypa(*)
-      real aps(3,*)
-c
-      data xinit/1.,0.,0.,1.,
-     1           0.707106,-0.707106,-0.707106,+0.707106/
-c
-      ipa(a) = max(1,min(int(a),n-1))
-      jpa(a) = max(1,min(int(a),m-1))
-      ugl(q) = max(u1,min(q,u2))
-      vgl(q) = max(v1,min(q,v2))
+      data xinit/1.d0,0.d0,0.d0,1.d0,
+     1           0.707106d0,-0.707106d0,-0.707106d0,0.707106d0/
 c
       imes  = 0
       disto = distl
@@ -28,10 +25,10 @@ c
       v2 = v20
       ug = min(u2,max(u1,ug))
       vg = min(v2,max(v1,vg))
-      i  = ipa(ug)
-      j  = jpa(vg)
-      u  = ug - float(i)
-      v  = vg - float(j)
+      i  = max(1,min(int(ug),n-1))
+      j  = max(1,min(int(vg),m-1))
+      u  = ug - dble(i)
+      v  = vg - dble(j)
 c
 c set iteration counters
 c
@@ -45,11 +42,11 @@ c
       ndu    = aps(1,kpa)
       ndv    = aps(2,kpa)
 c      xl     = aps(3,kpa)
-      xl     = 1.0
+      xl     = 1.d0
       p(1)   = ug
       p(2)   = vg
-      xit(1) = 0.
-      xit(2) = 0.
+      xit(1) = 0.d0
+      xit(2) = 0.d0
       fret = distps(xp,ug,vg,xit,0.,keypa,aps,n,m,z,
      1               r,der,g,ugn,vgn,0)
       if(fret.lt.disto*xl)then
@@ -81,7 +78,7 @@ c sweep over direction set
 c
        fp = fret
        ibig =0
-       del =0.
+       del =0.d0
        do 13 i=1,2
          xit(1) = xi(1,i)
          xit(2) = xi(2,i)
@@ -170,7 +167,7 @@ c
 c normalize direction
 c
       aa = sqrt(xit(1)**2+xit(2)**2)
-      aa = 1./max(zerom,aa)
+      aa = 1.d0/max(zerom,aa)
       xit(1) = aa*xit(1)
       xit(2) = aa*xit(2)
 c

@@ -33,6 +33,7 @@ C
 C=BLOCK SOURCE
 C
       subroutine evapat(ndimn,qferg,apatch)
+      implicit none
 c
 c evaluates the matrix a of the bicubic patch from
 c the matrix q of the ferguson formulation.
@@ -43,16 +44,20 @@ c (we have preferred a straightforward matrix moltiplication
 c  type of implementation because easier to program, though more
 c  expensive)
 c
-      real qferg(ndimn,4,4),apatch(ndimn,4,4)
-      real c(4,4)
-      integer id
-      data c/1.,0.,-3., 2.,
-     2       0.,0., 3.,-2.,
-     3       0.,1.,-2., 1.,
-     4       0.,0.,-1., 1./
-      q(i,j) = qferg(id,i,j)
+      integer*8 i,id,l,ndimn
+      real*8 q(4,4),qferg(ndimn,4,4),apatch(ndimn,4,4)
+      real*8 c(4,4)
+      data c/1.d0,0.d0,-3.d0, 2.d0,
+     2       0.d0,0.d0, 3.d0,-2.d0,
+     3       0.d0,1.d0,-2.d0, 1.d0,
+     4       0.d0,0.d0,-1.d0, 1.d0/
 c
       do 10 id=1,ndimn
+        do 9 i=1,4
+          do 8 l=1,4
+            q(i,l)=qferg(id,i,l)
+ 8        continue
+ 9      continue
         do 11 i=1,4
           do 12 l=1,4
              apatch(id,i,l)=

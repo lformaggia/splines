@@ -55,12 +55,14 @@ C=BLOCK SOURCE
 C
       subroutine loas1d(isn,xln1d,is,ksio,isio,narc,isg,isl1,isl2,
      1                  ug1,ug2,xg,marc,msel,ito,ierr)
+      implicit none
 C
 C IT LOADS CURVE COEFFICENTS FROM FILE
 C
 C
-      real xln1d(3,msel)
-      integer isn(marc)
+      integer*8 i,ierr,is,isg,isio,isl1,isl2,isn(marc),ito,j,key
+      integer*8 ksio,marc,msel,narc,ndeg,ips
+      real*8 ax,ay,az,ug1,ug2,xg,xl,xln1d(3,msel)
 C
       ips = 0
       ierr =0
@@ -70,7 +72,7 @@ C
         ips=ips+1
         if(i.lt.marc)isn(i)=ips
         read(isio,rec=key+ips)ndeg,xl
-        xln1d(1,ips)=ndeg
+        xln1d(1,ips)=dble(ndeg)
         xln1d(2,ips)=xl
         do 20 j=1,ndeg
           ips = ips+1

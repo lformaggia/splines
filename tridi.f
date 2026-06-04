@@ -3,7 +3,9 @@ c
 c
 c decomposition
 c
-      dimension a(*  ),b(*  ),c(*  )
+      implicit none
+      integer*8 i,n,n1
+      real*8 a(*),b(*),c(*)
 c
       i=1
       c(i)=c(i)/b(i)
@@ -22,7 +24,9 @@ c
       end
       subroutine tris (n,a,b,c,d)
 c
-      dimension a(*  ),b(*  ),c(*  ),d(*  )
+      implicit none
+      integer*8 i,ib,n,n1
+      real*8 a(*),b(*),c(*),d(*)
 c
 c back substitution .. single d
 c
@@ -43,7 +47,9 @@ c
       end
       subroutine TRIS2(n,m,a,b,c,d)
 c
-      dimension a(*  ),b(*  ),c(*  ),d(m,*)
+      implicit none
+      integer*8 i,ib,id,m,n,n1
+      real*8 a(*),b(*),c(*),d(m,*)
 c
 c back substitution .. multiple d
 c

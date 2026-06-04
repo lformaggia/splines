@@ -115,21 +115,24 @@ C
       subroutine getta3(ndimn,n,m,mm,coor,
      1                  tanret,choret,
      1                  q,cs,a,b,c,t,ispt3)
+      implicit none
 c
 c m,n dimension of the lattice, mm=max(m,n) .        n. of
 c points in the lattice= m*n
 c
-      real tanret(ndimn,3,n,m),choret(2,n,m)
-      real q(ndimn,mm),cs(mm),a(mm),b(mm),c(mm),t(ndimn,mm)
-      real coor(ndimn,*),timp(6)
+      integer*8 i,id,iretp,ispt3(3,2),ispty(2),j,k,m,mm,n,ndimn
+      integer*8 one,two,three
+      real*8 tanret(ndimn,3,n,m),choret(2,n,m)
+      real*8 q(ndimn,mm),cs(mm),a(mm),b(mm),c(mm),t(ndimn,mm)
+      real*8 coor(ndimn,*),timp(6)
 c
-      integer ispty(2),ispt3(3,2)
+      parameter(one=1,two=2,three=3)
       iretp(i,j)=(j-1)*n +i
 c
 c get r,v along the u=cost lines
 c
-      ispty(1)=1
-      ispty(2)=1
+      ispty(1)=one
+      ispty(2)=one
       do 100 i=1,n
          do 110 j=1,m
          do 110 id=1,ndimn
@@ -137,24 +140,24 @@ c
 110      continue
          call cholen(ndimn,m,q,cs)
          if(abs(ispt3(2,1)).eq.1)then
-            ispty(1)=1
-            call gtimp(ndimn,timp,q,m,1)
+            ispty(1)=one
+            call gtimp(ndimn,timp,q,m,one)
          else if(ispt3(2,1).eq.0)then
             ispty(1)=0
          else if(ispt3(2,1).eq.2)then
-            ispty(1)=1
-            call movt(ndimn,timp,1,tanret,2,i,1,n,m)
+            ispty(1)=one
+            call movt(ndimn,timp,one,tanret,two,i,one,n,m)
          else
             ispty(1)=ispt3(2,1)
          endif
          if(abs(ispt3(2,2)).eq.1)then
-            ispty(2)=1
-            call gtimp(ndimn,timp,q,m,2)
+            ispty(2)=one
+            call gtimp(ndimn,timp,q,m,two)
          else if(ispt3(2,2).eq.0)then
             ispty(2)=0
          else if(ispt3(2,2).eq.2)then
-            ispty(2)=1
-            call movt(ndimn,timp,2,tanret,2,i,m,n,m)
+            ispty(2)=one
+            call movt(ndimn,timp,two,tanret,two,i,m,n,m)
          else
             ispty(2)=ispt3(2,2)
          endif
@@ -177,24 +180,24 @@ c
 210      continue
          call cholen(ndimn,n,q,cs)
          if(abs(ispt3(1,1)).eq.1)then
-            ispty(1)=1
-            call gtimp(ndimn,timp,q,n,1)
+            ispty(1)=one
+            call gtimp(ndimn,timp,q,n,one)
          else if(ispt3(1,1).eq.0)then
             ispty(1)=0
          else if(ispt3(1,1).eq.2)then
-            ispty(1)=1
-            call movt(ndimn,timp,1,tanret,1,1,j,n,m)
+            ispty(1)=one
+            call movt(ndimn,timp,one,tanret,one,one,j,n,m)
          else
             ispty(1)=ispt3(1,1)
          endif
          if(abs(ispt3(1,2)).eq.1)then
-            ispty(2)=1
-            call gtimp(ndimn,timp,q,n,2)
+            ispty(2)=one
+            call gtimp(ndimn,timp,q,n,two)
          else if(ispt3(1,2).eq.0)then
             ispty(2)=0
          else if(ispt3(1,2).eq.2)then
-            ispty(2)=1
-            call movt(ndimn,timp,2,tanret,1,n,j,n,m)
+            ispty(2)=one
+            call movt(ndimn,timp,two,tanret,one,n,j,n,m)
          else
             ispty(2)=ispt3(1,2)
          endif
@@ -220,25 +223,25 @@ c
            q(id,i) = tanret(id,2,i,j)
 410     continue
          if(abs(ispt3(3,1)).eq.1)then
-            ispty(1)=1
-            call gtimp(ndimn,timp,q,n,1)
+            ispty(1)=one
+            call gtimp(ndimn,timp,q,n,one)
          else if(ispt3(3,1).eq.0)then
             ispty(1)=0
          else if(ispt3(3,1).eq.2)then
-            ispty(1)=1
-            call movt(ndimn,timp,1,tanret,3,1,j,n,m)
+            ispty(1)=one
+            call movt(ndimn,timp,one,tanret,three,one,j,n,m)
          else
             ispty(1)=ispt3(3,1)
          endif
 c
          if(abs(ispt3(3,2)).eq.1)then
-            ispty(2)=1
-            call gtimp(ndimn,timp,q,n,2)
+            ispty(2)=one
+            call gtimp(ndimn,timp,q,n,two)
          else if(ispt3(3,2).eq.0)then
             ispty(2)=0
          else if(ispt3(3,2).eq.2)then
-            ispty(2)=1
-            call movt(ndimn,timp,2,tanret,3,n,j,n,m)
+            ispty(2)=one
+            call movt(ndimn,timp,two,tanret,three,n,j,n,m)
          else
             ispty(2)=ispt3(3,2)
          endif
@@ -258,8 +261,8 @@ c again: interpolate r,uv vorking along the v lines and
 c using as boundary condition the tangent evaluated in the
 c previous step
 c
-      ispty(1) = 1
-      ispty(2) = 1
+      ispty(1) = one
+      ispty(2) = one
 c
       do 500 i=1,n
 c

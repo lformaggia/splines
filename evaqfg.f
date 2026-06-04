@@ -39,12 +39,15 @@ C=BLOCK SOURCE
 C
       subroutine evaqfg(ndimn,tanret,choret,n,m,i,j,qferg,
      1                  coor)
+      implicit none
 c
 c it evaluates the matrix q for the ferguson patch (i,j) and
 c stores it into qferg
 c
-      real qferg(ndimn,4,4),tanret(ndimn,3,n,m),choret(2,n,m)
-      real coor(ndimn,*)
+      integer*8 i,i00,i01,i10,i11,id,j,k1,k2,m,n,ndimn,iretp
+      real*8 a,ab,ad,b,bc,c,cd,d
+      real*8 qferg(ndimn,4,4),tanret(ndimn,3,n,m),choret(2,n,m)
+      real*8 coor(ndimn,*)
       iretp(k1,k2)=(k2-1)*n +k1
 c
       i00= iretp(i,j)

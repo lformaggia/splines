@@ -88,38 +88,41 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      real function xlenst(xln1d,u1,u2,eps,prec,in,ierr)
+      real*8 function xlenst(xln1d,u1,u2,eps,prec,in,ierr)
+      implicit none
 c
 c *** this sub. computes the length of a segment of a spline.
 c     using a romberg adaptive integration
 c
+      integer*8 ierr,in,it,jt,kt,nit
       parameter(nit=20)
-      real xln1d(*),xp(3),xd(3),xdd(3),xddd(3)
+      real*8 aa,eps,eps1,f1,f2,os,ost,prec,s,st,sum,tnm,u1,u2,u21
+      real*8 x,xd(3),xddd(3),xdd(3),xln1d(*),xp(3),del
 c
       eps1 = eps
       ierr = 0
-      os   = -1.e+30
+      os   = -1.d30
 c
       call evps1d(xln1d,u1,xp,xd,xdd,xddd,f1,-1)
       call evps1d(xln1d,u2,xp,xd,xdd,xddd,f2,-1)
 c
       u21 = u2-u1
-      st = 0.5*u21*(f1+f2)
+      st = 0.5d0*u21*(f1+f2)
       ost = st
       kt = 1
       do 200 it=1,nit
-      tnm = kt
+      tnm = dble(kt)
       del = u21/tnm
-      x = u1+0.5*del
-      sum = 0.0
+      x = u1+0.5d0*del
+      sum = 0.d0
       do 100 jt=1,kt
       call evps1d(xln1d,x,xp,xd,xdd,xddd,aa,-1)
       sum = sum+aa
       x = x+del
   100 continue
-      st = 0.5*(st+del*sum)
+      st = 0.5d0*(st+del*sum)
       kt = kt*2
-      s = (4.*st-ost)/3.
+      s = (4.d0*st-ost)/3.d0
       if(in.eq.0) eps1 = eps*abs(os)
       prec = abs(s-os)
       if(prec.le.eps1) goto 300

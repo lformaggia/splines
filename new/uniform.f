@@ -36,10 +36,12 @@ C=BLOCK SOURCE
 C
       subroutine uniform(n,delta)
 c
-      real     delta(n)
+      implicit none
+      integer*8 i,n
+      real*8 delta(n)
 c
       do 10 i=1,n-1
-       delta(i) =1.
+       delta(i) =1.d0
 10    continue
       return
       end

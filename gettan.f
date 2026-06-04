@@ -37,7 +37,9 @@ C
 c
 c  tp -> tangent at point
 c
-      real      q(ndimn,*),t(ndimn,*),cs(*),tp(*)
+      implicit none
+      integer*8 id,ir,is,n,ndimn
+      real*8 a1,a2,clen,cs(*),q(ndimn,*),r12,t(ndimn,*),t1,t2,tp(*),u
 c
       clen = cs(is)
       ir = is+1
@@ -45,8 +47,8 @@ c
          r12 = q(id,ir-1) - q(id,ir )
          t1  = t(id,ir-1)
          t2  = t(id,ir  )
-         a1  =  6*r12 + 3*clen*(t1+t2  )
-         a2  = -6*r12 - 2*clen*(2*t1+t2)
+         a1  =  6.d0*r12 + 3.d0*clen*(t1+t2  )
+         a2  = -6.d0*r12 - 2.d0*clen*(2.d0*t1+t2)
          tp(id)= (   a1                      *u +
      1               a2                     )*u +
      1               clen*t1

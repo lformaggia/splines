@@ -64,6 +64,7 @@ C=BLOCK SOURCE
 C
       subroutine  finded(aps,keypa,n,m,iedg,nsseg,isn,xln1d,narc,
      1                   marc,msel,ito,ierr)
+      implicit none
 C
 C FINDS THE COEFFICIENTS OF A CURVE CORRESPONDING TO A SURFACE EDGE
 C
@@ -80,9 +81,11 @@ C      !____
 C          i
 C
 C
-      real aps(3,*),x1(3),x2(3),xln1d(3,msel)
-      integer keypa(*),ndu,ndv,i,j,n,m,kpa,isn(marc)
-      apatch (id,ii,jj) =aps(id,kpa+(jj-1)*ndu+ii)
+      integer*8 i,iarc,ico,id,iedg,ien,ierr,ist,ito,ixx,j,jen,jst
+      integer*8 k,keypa(*),kk,kpa,marc,m,msel,n,na,narc,nd,ndu,ndv
+      integer*8 nsseg,isn(marc)
+      real*8 a1,a2,a3,aps(3,*),u1,u2,v1,v2,x1(3),x2(3),xl,xln1d(3,msel)
+      real*8 xx(3)
 C
       ierr =0
       ico  =1
@@ -91,35 +94,35 @@ C
         na=n
         ist=1
         ien=n-1
-        u1  =0.
-        u2  =1.
+        u1  =0.d0
+        u2  =1.d0
         if (iedg.eq.1)then
             jst=1
             jen=1
-            v1 =0.
-            v2 =0.
+            v1 =0.d0
+            v2 =0.d0
         else
             jst=m-1
             jen=m-1
-            v1 =1.
-            v2 =1.
+            v1 =1.d0
+            v2 =1.d0
         endif
       else if(iedg.eq.2.or.iedg.eq.4)then
         na=m
         jst=1
         jen=m-1
-        v1 =0.
-        v2 =1.
+        v1 =0.d0
+        v2 =1.d0
         if (iedg.eq.2)then
             ist=n-1
             ien=n-1
-            u1 = 1.
-            u2 = 1.
+            u1 = 1.d0
+            u2 = 1.d0
         else
             ist=1
             ien=1
-            u1 =0.
-            u2 =0.
+            u1 =0.d0
+            u2 =0.d0
         endif
       endif
       if(na.gt.marc)then
@@ -150,14 +153,14 @@ c
          xl=sqrt((x2(1)-x1(1))**2+(x2(2)-x1(2))**2+
      1                   (x1(3)-x2(3))**2)
          isn(iarc)=ico
-         xln1d(1,ico) = nd
+         xln1d(1,ico) = dble(nd)
          xln1d(2,ico) = xl
          ico          = ico +1
          if(iedg.eq.1)then
                do 70 k=1,ndu
-                 a1=apatch(1,k,1)
-                 a2=apatch(2,k,1)
-                 a3=apatch(3,k,1)
+                 a1=aps(1,kpa+(1-1)*ndu+k)
+                 a2=aps(2,kpa+(1-1)*ndu+k)
+                 a3=aps(3,kpa+(1-1)*ndu+k)
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
@@ -170,13 +173,13 @@ c
 70             continue
          else if(iedg.eq.3)then
                do 71 k=1,ndu
-                 a1=apatch(1,k,1)
-                 a2=apatch(2,k,1)
-                 a3=apatch(3,k,1)
+                 a1=aps(1,kpa+(1-1)*ndu+k)
+                 a2=aps(2,kpa+(1-1)*ndu+k)
+                 a3=aps(3,kpa+(1-1)*ndu+k)
                  do 72 kk=2,ndv
-                   a1=a1+apatch(1,k,kk)
-                   a2=a2+apatch(2,k,kk)
-                   a3=a3+apatch(3,k,kk)
+                   a1=a1+aps(1,kpa+(kk-1)*ndu+k)
+                   a2=a2+aps(2,kpa+(kk-1)*ndu+k)
+                   a3=a3+aps(3,kpa+(kk-1)*ndu+k)
 72               continue
                  if (ico.gt.msel)then
                    ixx = ico
@@ -190,9 +193,9 @@ c
 71              continue
          else if(iedg.eq.4)then
                do 80 k=1,ndv
-                 a1=apatch(1,1,k)
-                 a2=apatch(2,1,k)
-                 a3=apatch(3,1,k)
+                 a1=aps(1,kpa+(k-1)*ndu+1)
+                 a2=aps(2,kpa+(k-1)*ndu+1)
+                 a3=aps(3,kpa+(k-1)*ndu+1)
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
@@ -205,13 +208,13 @@ c
 80             continue
          else if(iedg.eq.2)then
                do 81 k=1,ndv
-                 a1=apatch(1,1,k)
-                 a2=apatch(2,1,k)
-                 a3=apatch(3,1,k)
+                 a1=aps(1,kpa+(k-1)*ndu+1)
+                 a2=aps(2,kpa+(k-1)*ndu+1)
+                 a3=aps(3,kpa+(k-1)*ndu+1)
                  do 82 kk=2,ndu
-                   a1=a1+apatch(1,kk,k)
-                   a2=a2+apatch(2,kk,k)
-                   a3=a3+apatch(3,kk,k)
+                   a1=a1+aps(1,kpa+(k-1)*ndu+kk)
+                   a2=a2+aps(2,kpa+(k-1)*ndu+kk)
+                   a3=a3+aps(3,kpa+(k-1)*ndu+kk)
 82               continue
                  if (ico.gt.msel)then
                    ixx = ico

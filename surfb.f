@@ -65,6 +65,7 @@ C=BLOCK SOURCE
 C
       subroutine surfb(ifa,rest,nssur,n,m,mpatch,msul,ito,
      1                 aps,keypa,ierr)
+      implicit none
 C
 C
 C  memory mapping for GETTA3
@@ -75,9 +76,10 @@ C   1      IP1     IP2     IP3  IP4   IP5  IP6  IP7  IP8  <-- REST
 C
 C total: 14*n*m + 10*max(n,m)
 C
-      real rest(*),aps(3,msul)
-      real apatch(3,4,4)
-      integer ispt3(3,2),keypa(mpatch)
+      integer*8 i,id,ifa,ierr,ii,ip1,ip2,ip3,ip4,ip5,ip6,ip7,ip8
+      integer*8 ipa,ito,j,jj,k,keypa(mpatch),m,mpatch,msul,n,npa
+      integer*8 npatch,nssur,nn,ispt3(3,2)
+      real*8 apatch(3,4,4),aps(3,msul),ch1,ch2,rest(*),xl
 c
       data ispt3/0,0,0,0,0,0/
 C
@@ -123,10 +125,10 @@ C
         ch1 = rest(12*n*m + 1 + (i-1)*2 + (j-1)*2*n)
         ch2 = rest(12*n*m + 2 + (i-1)*2 + (j-1)*2*n)
 c        xl=0.5*(choret(1,i,j)+choret(2,i,j))
-        xl=0.5*(ch1+ch2)
-        call evapa2(n,m,3,tanret,choret,coors,apatch,i,j)
-        aps(1,ipa)=n
-        aps(2,ipa)=m
+        xl=0.5d0*(ch1+ch2)
+        call evapa2(n,m,3,rest(ip1),rest(ip2),rest,apatch,i,j)
+        aps(1,ipa)=4.d0
+        aps(2,ipa)=4.d0
         aps(3,ipa)=xl
         ipa = ipa+1
 c

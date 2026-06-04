@@ -20,12 +20,14 @@ C=BLOCK SOURCE
 C
       subroutine cholen(ndimn,n,q,cs)
 c
-      real      cs(*),q(ndimn,*)
+      implicit none
+      integer*8 i,id,n,ndimn
+      real*8 cs(*),q(ndimn,*)
 c
 c evaluates chord length cs(i) = |r(i+1)-r(i)|
 c
       do 10 i=1,n-1
-         cs(i)=0
+         cs(i)=0.d0
          do 20 id=1,ndimn
 c
             cs(i) = cs(i)+

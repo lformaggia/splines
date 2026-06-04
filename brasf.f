@@ -6,17 +6,18 @@ c is1<is<is2 the segments at the extrema are checked for the presence
 c of a global minimum only if they are the extrema of the whole spline
 c itype=0 search only for the first segment, =1 get'em all
 c
-       real x(ndimn),q(ndimn,*),t(ndimn,*),cs(*)
-       integer index(*)
+       implicit none
+       integer*8 i1,i2,id,index(*),is,is1,is2,itype,n,ndimn,ns
        logical h1,h2
+       real*8 cs(*),cx,hh,q(ndimn,*),r1,r2,r21,t(ndimn,*),t12,x(ndimn)
 c
        ns = 0
        do 10 is = is1,is2
          i1 =is
          i2 =is+1
-         r1 = 0.
-         r2 = 0.
-         hh = 0.
+         r1 = 0.d0
+         r2 = 0.d0
+         hh = 0.d0
          cx = cs(is)
          do 15 id=1,ndimn
           r1 = r1+(x(id) - q(id,i1))*t(id,i1)
@@ -35,7 +36,7 @@ c
          else if(is.eq.n-1.and..not.h2)then
            ns=ns+1
            index(ns)=is
-         else if((h1.and.h2).or.hh.lt.-1.e-10)then
+         else if((h1.and.h2).or.hh.lt.-1.d-10)then
            ns=ns+1
            index(ns)=is
          endif

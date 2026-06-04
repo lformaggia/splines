@@ -59,6 +59,7 @@ C=BLOCK SOURCE
 C
       subroutine buicvf(narc,nlcur,ngcur,xln1d,isn,ksio,isio,inkcur,
      1                  ug1,ug2,il1,il2,xg)
+      implicit none
 c
 c writes a curve definition into the data base
 c
@@ -75,8 +76,9 @@ c  ug1,ug2   = parametric coordinates of curve limit points
 c  il1,il2   = curve-surface links
 c  xg        = curvature control parameter
 c
-      dimension xln1d(3,*)
-      dimension isn(*)
+      integer*8 i,id,ii,il1,il2,inkcur,ipa,isio,isn(*),kpa,ksio
+      integer*8 narc,ngcur,nlcur,nu
+      real*8 ug1,ug2,xg,xl,xln1d(3,*)
 c
       ipa =0
 c
@@ -90,7 +92,7 @@ c
         xl  = xln1d(2,kpa)
         nu  = int(xln1d(1,kpa))
         kpa = kpa + 1
-        write(isio,rec=inkcur)nu,xl,0.
+        write(isio,rec=inkcur)nu,xl,0.d0
         inkcur=inkcur+1
 c
 c loop over coefficents

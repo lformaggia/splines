@@ -99,10 +99,11 @@ C
 C=BLOCK SOURCE
 C
       subroutine trcoe(ndimn,n,q,cs,a,b,c,t,ispty,timp)
-      parameter (zero=1.e-10)
-      real      q(ndimn,*),cs(*),a(*),b(*),c(*)
-      real      t(ndimn,*),timp(ndimn,*)
-      integer   ispty(2)
+      implicit none
+      integer*8 i,i0,i1,i2,id,ii1,ii2,ispty(2),n,ndimn
+      real*8 a(*),a1,b(*),beta,c(*),c1,cs(*),q(ndimn,*),t(ndimn,*)
+      real*8 timp(ndimn,*),zero
+      parameter (zero=1.d-10)
 c
       ii1   = ispty(1)
       ii2   = ispty(2)
@@ -125,10 +126,10 @@ c
         if (abs(a1).lt.zero)a1=zero
         if (abs(c1).lt.zero)c1=zero
         a(i) = a1
-        b(i) = 2*(a1+c1)
+        b(i) = 2.d0*(a1+c1)
         c(i) = c1
         do 10 id=1,ndimn
-         t(id,i) = (3./(a1*c1))*
+         t(id,i) = (3.d0/(a1*c1))*
      1                  (c1*c1*(q(id,i+1)-q(id,i  ))+
      1                   a1*a1*(q(id,i  )-q(id,i-1)) )
 10    continue
@@ -148,17 +149,17 @@ c
 c natural spline
 c
          do 40 id =1,ndimn
-            t(id   ,1)=3*(q(id   ,2) -q(id,1))
+            t(id   ,1)=3.d0*(q(id   ,2) -q(id,1))
 40       continue
-         b(1)=2*cs(1)
+         b(1)=2.d0*cs(1)
          c(1)=cs(1)
-         a(1)=0
+         a(1)=0.d0
          if(b(1).lt.zero)b(1)=zero
       else if(ii1.eq.3)then
 c
 c Bessel
 c
-         beta=b(2)/2.
+         beta=b(2)/2.d0
          i0 = 1
          i1 = 2
          i2 = 3
@@ -169,9 +170,9 @@ c
      1      q(id,i2)*(cs(i0)/(cs(i1)*beta))
 33       continue
 c
-         a(1)=0
-         b(1)=1
-         c(1)=0
+         a(1)=0.d0
+         b(1)=1.d0
+         c(1)=0.d0
 c
       else if(ii1.eq.4)then
 c
@@ -180,11 +181,11 @@ c
          i0 = 1
          i1 = 2
          do 34 id=1,ndimn
-            t(id,1)=2*(q(id,i1)-q(id,i0))/cs(i0)
+            t(id,1)=2.d0*(q(id,i1)-q(id,i0))/cs(i0)
 34       continue
-         a(1)=0
-         b(1)=1
-         c(1)=1
+         a(1)=0.d0
+         b(1)=1.d0
+         c(1)=1.d0
 c
       else if(ii1.eq.5)then
 c
@@ -200,7 +201,7 @@ c
      1      (q(id,i1)-q(id,i0))*(cs(i1)/cs(i0))*
      1          (3*cs(i0)+2*cs(i1))
 35       continue
-         a(1)=0
+         a(1)=0.d0
          b(1)=cs(i1)*beta
          c(1)=beta*beta
       endif
@@ -212,19 +213,19 @@ c
          do 32 id = 1,ndimn
             t(id   ,n)=timp(id,2)
 32       continue
-         b(n)=1
-         a(n)=0
-         c(n)=0
+         b(n)=1.d0
+         a(n)=0.d0
+         c(n)=0.d0
       else if(ii2.eq.0)then
 c
 c natural spline
 c
          do 41 id =1,ndimn
-            t(id   ,n)=3*(q(id   ,n) -q(id,n-1) )
+            t(id   ,n)=3.d0*(q(id   ,n) -q(id,n-1) )
 41       continue
-         b(n)=2*cs(n-1)
+         b(n)=2.d0*cs(n-1)
          a(n)=cs(n-1)
-         c(n)=0
+         c(n)=0.d0
          if(b(n).lt.zero)b(n)=zero
 c
       else if(ii2.eq.3)then
@@ -234,7 +235,7 @@ c
          i0 = n
          i1 = n-1
          i2 = n-2
-         beta=b(n-1)/2.
+         beta=b(n-1)/2.d0
          do 43 id=1,ndimn
             t(id,n)=
      1      q(id,i0)*(2*cs(i1)+cs(i2))/(beta*cs(i1))-
@@ -242,9 +243,9 @@ c
      1      q(id,i2)*(cs(i1)/(cs(i2)*beta))
 43       continue
 c
-         a(n)=0
-         b(n)=1
-         c(n)=0
+         a(n)=0.d0
+         b(n)=1.d0
+         c(n)=0.d0
 c
       else if(ii2.eq.4)then
 c
@@ -253,11 +254,11 @@ c
          i0 = n-1
          i1 = n
          do 44 id=1,ndimn
-            t(id,n)=2*(q(id,i1)-q(id,i0))/cs(i0)
+            t(id,n)=2.d0*(q(id,i1)-q(id,i0))/cs(i0)
 44       continue
-         a(n)=1
-         b(n)=1
-         c(1)=0
+         a(n)=1.d0
+         b(n)=1.d0
+         c(1)=0.d0
 c
       else if(ii2.eq.5)then
 c
@@ -271,11 +272,11 @@ c
             t(id,n)=
      1   (q(id,i1)-q(id,i2))*(cs(i1)*cs(i1))/cs(i2)+
      1   (q(id,i0)-q(id,i1))*(cs(i2)/cs(i1))*
-     1   (3*cs(i1)+2*cs(i2))
+     1   (3.d0*cs(i1)+2.d0*cs(i2))
 45       continue
          a(n)=beta*beta
          b(n)=cs(i2)*beta
-         c(n)=0.
+         c(n)=0.d0
       endif
       return
       end

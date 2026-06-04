@@ -70,8 +70,10 @@ c     kfio    = "key" file i/o channel number
 c     ifio    = "data" file i/o channel number
 c     inksur  = first available location in data file
 c
-      dimension aps(3,*)
-      dimension keypa(*)
+      implicit none
+      integer*8 i,ib,id,ifio,ii,inksur,ipa,jj,keypa(*),kfio,kpa
+      integer*8 m,n,ngsur,nlsur,nu,nv
+      real*8 aps(3,*),xl
 c
       ipa =0
 c      write(kfio,rec=nlsur)inksur,n,m

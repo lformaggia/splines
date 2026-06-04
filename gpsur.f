@@ -61,7 +61,9 @@ c
 c get a point of coordinate parameters u,v of the
 c bicubic patch
 c
-      real r(ndimn),apatch(ndimn,4,4)
+      implicit none
+      integer*8 id,ndimn
+      real*8 apatch(ndimn,4,4),d1,d2,d3,d4,r(ndimn),u,v
 c
       do 10 id=1,ndimn
          d1 = ((apatch(id,1,4) *v+

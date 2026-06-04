@@ -39,8 +39,9 @@ C
 C=BLOCK SOURCE
 C
        subroutine limiuv(ugs,vgs,xi,u10,u20,v10,v20,bl1,bl2)
-      parameter(zero=1.e-20)
-      real xi(2)
+      implicit none
+      real*8 b1,b2,b3,b4,bl1,bl2,t,u10,u20,ugs,v10,v20,vgs,xi(2),zero
+      parameter(zero=1.d-20)
 c
 c     find b1l, b2l such that  u10< ugs + b1l*xi(1) < u20
 c     and                      v10<= vgs + b
@@ -52,8 +53,8 @@ c
         b2 = b1+ b2 -t
         b1 = t
       else
-        b1 =  1.e+10
-        b2 = -1.e+10
+        b1 =  1.d+10
+        b2 = -1.d+10
       endif
 c
       if(abs(xi(2)).gt.zero)then
@@ -63,8 +64,8 @@ c
         b4 = b3+ b4 -t
         b3 = t
       else
-        b3 =  1.e+10
-        b4 = -1.e+10
+        b3 =  1.d+10
+        b4 = -1.d+10
       endif
 c
       bl1 = max(b2,b4)

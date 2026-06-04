@@ -33,8 +33,9 @@ c=END USAGE
 C
 C=BLOCK SOURCE
 C
-      integer function ilocli(item ,list,nlist)
-      integer list(*)
+      integer*8 function ilocli(item ,list,nlist)
+      implicit none
+      integer*8 i,item,list(*),nlist
       ilocli=0
       if(item.eq.0)return
       do 10 i=1,nlist

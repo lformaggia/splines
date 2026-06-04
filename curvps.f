@@ -39,7 +39,7 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-       real function curvps(ru,rv,ruv,ruu,rvv,xnor,v)
+       real*8 function curvps(ru,rv,ruv,ruu,rvv,xnor,v)
 c
 c the function evaluates the curvature of a parametric surface
 c along the direction v. it return also the surface normal direction
@@ -50,13 +50,15 @@ c       curvature = ( v d v) / (v g v)
 c
 c where d=2nd fundamental matrix and g= 1st fundamental matrix
 c
-      real ru(3),rv(3),ruu(3),ruv(3),rvv(3),xnor(3),v(2)
+      implicit none
+      real*8 anor,d1,d2,d3,g1,g2,g3,ru(3),ruv(3),ruu(3),rv(3)
+      real*8 rvv(3),v(2),v1,v2,xnor(3)
 c
       xnor(1) = ru(2)*rv(3) - rv(2)*ru(3)
       xnor(2) = ru(3)*rv(1) - rv(3)*ru(1)
       xnor(3) = ru(1)*rv(2) - rv(1)*ru(2)
       anor = sqrt(xnor(1)*xnor(1)+xnor(2)*xnor(2)+xnor(3)*xnor(3))
-      anor = 1./anor
+      anor = 1.d0/anor
       xnor(1) = xnor(1)*anor
       xnor(2) = xnor(2)*anor
       xnor(3) = xnor(3)*anor

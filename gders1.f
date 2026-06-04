@@ -35,12 +35,14 @@ C
 C=BLOCK SOURCE
 C
        subroutine gders1(ndimn,ru,rv,ruv,ruu,rvv,apatch,u,v)
+       implicit none
 c
 c this routine gets the various derivatives at the point u,v
 c of the bicubic patch  r = uav
 c
-       real apatch(ndimn,4,4),ru(*),rv(*),ruv(*)
-       real ruu(*),rvv(*)
+       integer*8 id,ndimn
+       real*8 apatch(ndimn,4,4),d2,d3,d4,ru(*),ruu(*),ruv(*),rv(*)
+       real*8 rvv(*),s1,s2,s3,s4,u,v,z1,z2,z3,z4
 c
       do 10 id =1,ndimn
 c

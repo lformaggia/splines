@@ -37,20 +37,21 @@ c
 c
 c evaluate normal to curve
 c
-      real ru(3),rv(3),xnor(3)
+      implicit none
+      real*8 ano,anor,ru(3),rv(3),xnor(3)
 c
       xnor(1) = ru(2)*rv(3) - rv(2)*ru(3)
       xnor(2) = ru(3)*rv(1) - rv(3)*ru(1)
       xnor(3) = ru(1)*rv(2) - rv(1)*ru(2)
       anor = sqrt(xnor(1)*xnor(1)+xnor(2)*xnor(2)+xnor(3)*xnor(3))
-      if(anor.eq.0)then
-        xnor(1)=0
-        xnor(2)=0
-        xnor(2)=0
+      if(anor.eq.0.d0)then
+        xnor(1)=0.d0
+        xnor(2)=0.d0
+        xnor(3)=0.d0
         return
       endif
 c
-      ano = 1./anor
+      ano = 1.d0/anor
       xnor(1) = xnor(1)*ano
       xnor(2) = xnor(2)*ano
       xnor(3) = xnor(3)*ano

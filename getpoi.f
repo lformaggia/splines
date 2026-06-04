@@ -50,27 +50,30 @@ c  segment is of the cubic spline
 c
 c   x-> point      tp -> tangent at point
 c
-      real      q(ndimn,*),t(ndimn,*),cs(*),x(*),tp(*)
+      implicit none
+      integer*8 id,ir,is,n,ndimn
+      real*8 a1,a2,a3,clen,cs(*),q(ndimn,*),r12,t(ndimn,*),t1,t2
+      real*8 tp(*),u,x(*),xk
 c
-      xk = 0.
+      xk = 0.d0
       clen = cs(is)
       ir = is+1
       do 10 id=1,ndimn
          r12 = q(id,ir-1) - q(id,ir )
          t1  = t(id,ir-1)
          t2  = t(id,ir  )
-         a1  =  2*r12 + clen*(t1+t2)
-         a2  = -3*r12 - clen*(2*t1+t2)
+         a1  =  2.d0*r12 + clen*(t1+t2)
+         a2  = -3.d0*r12 - clen*(2.d0*t1+t2)
          a3  =  clen*t1
          x(id)=
      1         ( ( a1                        *u +
      1             a2                       )*u +
      1             a3                       )*u +
      1              q(id,ir-1)
-         tp(id)= ( 3*a1                      *u +
-     1             2*a2                     )*u +
+         tp(id)= ( 3.d0*a1                   *u +
+     1             2.d0*a2                  )*u +
      1               a3
-         xk    =   xk + (6*a1*u + 2*a2)**2
+         xk    =   xk + (6.d0*a1*u + 2.d0*a2)**2
  10   continue
       xk = sqrt(xk)/(clen*clen)
       return

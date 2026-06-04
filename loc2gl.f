@@ -43,15 +43,18 @@ C
 C=BLOCK SOURCE
 C
         subroutine loc2gl(ug,u,n,i,inv,ierr)
+        implicit none
+        integer*8 i,ierr,inv,n
+        real*8 u,ug
         ierr = 0
         if(inv.eq.1)then
          i = max(1,min(int(ug),n-1))
-         u = ug - float(i)
-         if(u.lt.0.)ierr=1
-         if(u.gt.1.)ierr=2
-         u = max(0.,min(1.,u))
+         u = ug - dble(i)
+         if(u.lt.0.d0)ierr=1
+         if(u.gt.1.d0)ierr=2
+         u = max(0.d0,min(1.d0,u))
         else
-         ug = u+float(i)
+         ug = u+dble(i)
         endif
         return
         end

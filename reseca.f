@@ -55,6 +55,7 @@ C=BLOCK SOURCE
 C
       subroutine reseca(ioc,narc,xln1d,isn,msel,marc,
      1                  il1,il2,ug1,ug2,icati,ito,ierr,linen)
+      implicit none
 C
 C READ CURVE COEFFS FROM CATIA GEOMETRY DEFINITION FILE
 C
@@ -72,8 +73,10 @@ c     ito   = standard output channel n.
 c     ierr  = error condition n. (0=no error)
 c
 c
-      real xln1d(3,*),x1(3),x2(3)
-      integer isn(marc),il(2)
+      integer*8 i,icati,icount,ico,icx,ierr,ikk,il(2),il1,il2
+      integer*8 io_dummy,ioc,is1,is2,isn(marc),ito,ix,j,linen,marc
+      integer*8 msel,narc,ndeg,nli,nlink
+      real*8 u1,u2,ug1,ug2,x,x1(3),x2(3),xl,xln1d(3,*),y,z,xx(3)
       character*80 line,cha*1,lin2*80
 c
 c
@@ -183,7 +186,7 @@ c
          isn(i)=ico
          read(ioc,'(T19,I6)')ndeg
          linen = linen+1
-         xln1d(1,ico)=ndeg
+         xln1d(1,ico)=dble(ndeg)
          ico = ico +1
          read(ioc,'(A)')line
          linen = linen+1
@@ -204,8 +207,8 @@ C
 C EVALUATE ARCH CHORD LENGTH
 C
          if(ico.gt.msel)go to 10
-         call evps1d(xln1d(1,icx),0.,x1,x,x,x,x,1)
-         call evps1d(xln1d(1,icx),1.,x2,x,x,x,x,1)
+         call evps1d(xln1d(1,icx),0.d0,x1,xx,xx,xx,x,1)
+         call evps1d(xln1d(1,icx),1.d0,x2,xx,xx,xx,x,1)
          xl = sqrt((x1(1)-x2(1))**2+(x1(2)-x2(2))**2+(x1(3)-x2(3))**2)
          xln1d(2,icx)=xl
 10    continue

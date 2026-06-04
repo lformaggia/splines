@@ -137,6 +137,7 @@ C
      1                  msel,msul,marc,mpatch,xln1d,isn,
      1                  filen,xgeod,ibd,inksur,inkseg,iocat,
      1                  ierr,ito,ksio,isio,kfio,ifio)
+      implicit none
 C
 C ROUTINE DI LETTURA INPUT FILE E DI ORGANIZZAZIONE DATA BASE.
 C
@@ -164,18 +165,22 @@ C XB1D3       COORDINATES OF END POINTS FOR DEFINITION SEGMENT (3,2,NBCS)
 C
 C.............................................................................
 C
-       real aps(*),xln1d(3,*)
-       integer inds(*),indg(*),keypa(*)
-       integer isn(*)
+       integer*8 ibd,ibn,icati,ifio,ierr,if_dummy,il1,il2,indg(*)
+       integer*8 inds(*),inkseg,inksur,iocat,iof,isio,isn(*),ito
+       integer*8 isoc,keypa(*),kfio,ksio,linen,m,n,narc,nbcs,ng0
+       integer*8 ns0,nsseg
+       integer*8 nssur,marc,mpatch,msel,mssur,msseg,msul
+       real*8 aps(*),ug1,ug2,xgeod,xln1d(3,*)
 C
        character*(*) filen
        logical isopen,exist,isof
-       character*4 line*80
+       character*80 line
 c
        ns0 = nssur
        ng0 = nsseg
        ierr =0
        linen=0
+       ibn = ibd
 C
 C OPEN FILES
 C

@@ -43,10 +43,9 @@ C=BLOCK SOURCE
 C
       subroutine correctt(timp,ndimn,delta,chord,n,iend)
 c
-      real      chord(n),delta(n),timp(ndimn,2)
-c
-c
-c
+      implicit none
+      integer*8 i,igo,iend,n,ndimn
+      real*8 chord(n),delta(n),den,scal,timp(ndimn,2)
       igo =iend
       if(iend.eq.2)igo=n-1
 c
@@ -54,8 +53,8 @@ c
 c
          den = abs(delta(igo))
 c
-         if(den.eq.0)then
-           scal=1.
+         if(den.eq.0.d0)then
+           scal=1.d0
          else
            scal = chord(igo)/den
          endif

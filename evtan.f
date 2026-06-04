@@ -50,13 +50,11 @@ C
 C=BLOCK SOURCE
 C
       subroutine evtan(ndimn,n,q,cs,a,b,c,t,ispty,timp)
-      parameter(zero=1.e-10)
-c
-      real q(ndimn,*),t(ndimn,*),cs(*),a(*),b(*),c(*)
-      real timp(ndimn,2)
-      integer ispty(*)
-c
-c
+      implicit none
+      integer*8 i,id,ispty(*),n,ndimn
+      real*8 a(*),b(*),c(*),cmax,cs(*),q(ndimn,*),t(ndimn,*)
+      real*8 timp(ndimn,2),zero
+      parameter(zero=1.d-10)
 c
       cmax = cs(1)
       do 1 i=2,n-1
@@ -65,7 +63,7 @@ c
       if(abs(cmax).lt.zero)then
         do 4 i=1,n
         do 4 id=1,ndimn
-                         t(id,i)=0.0
+                         t(id,i)=0.d0
 4       continue
         return
       endif

@@ -40,16 +40,18 @@ c
 c *** this sub. computes the coeficients of the polynomial |r'|**2
 c     for segment n. is (from point is-1 to is)
 c
-      real    q(ndimn,*),t(ndimn,*),cs(*),scoef(5)
-      real    len
+      implicit none
+      integer*8 i,id,is,n,ndimn
+      real*8 a1,a2,a3,a4,a5,f,len,p,pp,q(ndimn,*),qq,r12
+      real*8 scoef(5),s,t(ndimn,*),z,cs(*)
 c
 c     do 10 i=2,n
       i  =is+1
-      a1 = 0.0
-      a2 = 0.0
-      a3 = 0.0
-      a4 = 0.0
-      a5 = 0.0
+      a1 = 0.d0
+      a2 = 0.d0
+      a3 = 0.d0
+      a4 = 0.d0
+      a5 = 0.d0
 c
       do 1000 id=1,ndimn
       r12 = q(id,i-1)-q(id,i)
@@ -58,12 +60,12 @@ c
       z   = len*t(id,i  )
       pp = p*p
       qq = z*z
-      s = 3.*( 2.*r12+   p+z)
-      f = 2.*(-3.*r12-2.*p-z)
+      s = 3.d0*( 2.d0*r12+   p+z)
+      f = 2.d0*(-3.d0*r12-2.d0*p-z)
       a1 = a1+pp
-      a2 = a2+2.*p*f
-      a3 = a3+f*f+2.*p*s
-      a4 = a4+2.*f*s
+      a2 = a2+2.d0*p*f
+      a3 = a3+f*f+2.d0*p*s
+      a4 = a4+2.d0*f*s
       a5 = a5+s*s
  1000 continue
 c
@@ -73,7 +75,6 @@ c     ic=i-1
       scoef(3)=a3
       scoef(4)=a4
       scoef(5)=a5
-10    continue
 c
       return
       end

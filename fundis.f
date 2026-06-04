@@ -34,15 +34,16 @@ C=END USAGE
 C
 C=BLOCK SOURCE
 C
-      real function fundis(ug,xln1d,isn,n,xd,xp,r)
-      parameter(zeps=1.e-32)
-      real xln1d(*),rd(3),r(3),xp(3)
-      integer isn(*)
+      real*8 function fundis(ug,xln1d,isn,n,xd,xp,r)
+      implicit none
+      integer*8 is,isn(*),ista,n
+      real*8 h,r(3),rd(3),s,ug,u,v1,v2,v3,xd,xln1d(*),xp(3),xxx(3),zeps
+      parameter(zeps=1.d-32)
 c
 c get arc and u value corresponding to ug
 c
       is = min(max(1,int(ug)),n-1)
-      u  = max(0.,min(ug - float(is),1.))
+      u  = max(0.d0,min(ug-dble(is),1.d0))
       ista = isn(is)
       call evps1d(xln1d(ista),u,r,rd,xxx,xxx,s,2)
       v1 = r(1) - xp(1)
@@ -50,7 +51,7 @@ c
       v3 = r(3) - xp(3)
       h    = v1*v1 + v2*v2 + v3*v3
       fundis = sqrt(h)
-      xd     = 2*(v1*rd(1) + v2*rd(2) + v3*rd(3))
+      xd     = 2.d0*(v1*rd(1) + v2*rd(2) + v3*rd(3))
       xd     = xd/max(fundis,zeps)
       return
       end

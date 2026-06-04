@@ -42,11 +42,13 @@ C
 C=BLOCK SOURCE
 C
       subroutine slen(ndimn,n,q,t,cs,len,eps)
-      real len(*),scoef(5)   ,cs(*)
-c     real q(ndimn,*),t(ndimn,*),scoef(5)
+      implicit none
+      integer*8 i,in,n,ndimn
+      real*8 a1,a2,a3,a4,a5,cs(*),eps,eps1,len(*),q(ndimn,*)
+      real*8 s,scoef(5),t(ndimn,*),u1,u2
       in=1
-      u1=0
-      u2=1
+      u1=0.d0
+      u2=1.d0
       do 10 i=1,n-1
 c
 c evaluate length**2 polinomial coeficents
@@ -59,7 +61,7 @@ c
          a3 = scoef(3)
          a4 = scoef(4)
          a5 = scoef(5)
-         call    lengt(in,a1,a2,a3,a4,a5,u1,u2,s,eps)
+         call lengt(in,a1,a2,a3,a4,a5,u1,u2,s,eps1)
          len(i)=s
 10    continue
       return

@@ -36,12 +36,16 @@ C
 C=BLOCK SOURCE
 C
       subroutine fertob(ndimn,qferg,bbez)
-      parameter(c13=1./3.,c19=1./9.)
-      real qferg(ndimn,4,4),bbez(ndimn,4,4)
-      integer i
-      q(k,j) = qferg(i,k,j)
+      implicit none
+      integer*8 i,j,k,ndimn
+      real*8 c13,c19,q(4,4),qferg(ndimn,4,4),bbez(ndimn,4,4)
+      parameter(c13=1.d0/3.d0,c19=1.d0/9.d0)
 c
       do 10 i=1,ndimn
+        do 5 j=1,4
+        do 5 k=1,4
+          q(k,j) = qferg(i,k,j)
+    5   continue
         bbez(i,1,1) = q(1,1)
         bbez(i,1,2) = q(1,1)+c13*q(1,3)
         bbez(i,1,3) = q(1,2)-c13*q(1,4)

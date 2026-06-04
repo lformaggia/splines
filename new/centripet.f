@@ -42,12 +42,14 @@ C=BLOCK SOURCE
 C
       subroutine centripet(n,cs,delta)
 c
-      real      cs(n),delta(n)
+      implicit none
+      integer*8 i,n
+      real*8 cs(n),delta(n)
 c
 c evaluates centripetal parametrisation
 c
       do 10 i=1,n-1
-         delta(i)=sqrt(max(cs(i),0.))
+         delta(i)=sqrt(max(cs(i),0.d0))
 10    continue
       return
       end

@@ -49,10 +49,12 @@ C=BLOCK SOURCE
 C
       subroutine brauv(ax,bx,cx,fa,fb,fc,ug,vg,keypa,aps,n,m,
      1                 xp,xi,bl1,bl2)
-      parameter (gold=1.618034, glimit=100., tiny=1.e-20)
-      real aps(3,*),xi(2),rr(3),xp(3),ru(2),rv(2)
-      real z(3),g(2)
-      integer keypa(*)
+      implicit none
+      integer*8 keypa(*),m,n
+      real*8 aps(3,*),ax,bl1,bl2,bx,cx,der,diff,distps,dum,fa,fb,fc
+      real*8 fu,g(2),glimit,gold,p,q,r,rr(3),ru(3),rv(3),tiny,u,ug
+      real*8 ugn,ulim,vg,vgn,xi(2),xp(3),z(3)
+      parameter (gold=1.618034d0, glimit=100.d0, tiny=1.d-20)
       fa=distps(xp,ug,vg,xi,ax,keypa,aps,n,m,z,rr,der,g,
      1                     ru,rv,ugn,vgn,0)
       fb=distps(xp,ug,vg,xi,bx,keypa,aps,n,m,z,rr,der,g,
@@ -104,7 +106,7 @@ c
         else
            diff = min(diff,-tiny)
         endif
-        u=bx-((bx-cx)*q-(bx-ax)*r)/(2.*sign(max(abs(q-r),tiny),diff))
+        u=bx-((bx-cx)*q-(bx-ax)*r)/(2.d0*sign(max(abs(q-r),tiny),diff))
         ulim=bx+glimit*(cx-bx)
         ulim= max(bl1,min(ulim,bl2))
         if((bx-u)*(u-cx).gt.0.)then

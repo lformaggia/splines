@@ -56,6 +56,7 @@ C=BLOCK SOURCE
 C
       subroutine resuca(ioc,aps,keypa,n,m,mpatch,msul,
      1                  isoc,ito,ierr,linen)
+      implicit none
 c
 c Reads Catia surface definition
 c
@@ -71,9 +72,12 @@ c   ito      = standard output channel
 c   ierr     = error condition (0= no error)
 c   linen = line number counter
 c
-      character*6 field,line*80,cha*1
-      real aps(3,msul),x1(3),x2(3)
-      integer keypa(*)
+      integer*8 i,ierr,ioc,ipa,isoc,ito,ix,ixx,j,k,keypa(*),kpa
+      integer*8 linen,m,mcoef,mpatch,msul,n,ni,nj,npatch,nu,nv
+      real*8 aps(3,msul),x,x1(3),x2(3),xl,xx(3),y,z
+      character*6 field
+      character*80 line
+      character*1 cha
 C
       ipa =1
       ierr =0
@@ -130,8 +134,8 @@ c
          read(ioc,'(A)')line
          linen = linen +1
          kpa = ipa
-         aps(1,kpa)=float(nu)
-         aps(2,kpa)=float(nv)
+         aps(1,kpa)=dble(nu)
+         aps(2,kpa)=dble(nv)
          ipa = ipa +1
          ixx =0
          do 20 k=1,nu*nv
@@ -152,8 +156,8 @@ c
 C
 C EVALUATE THE PATCH TYPICAL LENGHT XL AS THE DIAGONAL LENGHT
 C
-         call evsurg(aps(1,kpa),0.,0.,nu,nv,x1,xx,xx,xx,xx,xx,1)
-         call evsurg(aps(1,kpa),1.,1.,nu,nv,x2,xx,xx,xx,xx,xx,1)
+         call evsurg(aps(1,kpa),0.d0,0.d0,nu,nv,x1,xx,xx,xx,xx,xx,1)
+         call evsurg(aps(1,kpa),1.d0,1.d0,nu,nv,x2,xx,xx,xx,xx,xx,1)
          xl = sqrt((x1(1)-x2(1))**2+(x1(2)-x2(2))**2
      1        +(x1(3)-x2(3))**2)
          aps(3,kpa)=xl
