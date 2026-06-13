@@ -74,8 +74,8 @@ C
 c
       key = key-1
       npa = 0
-      do 10 i=1,n-1
-      do 10 j=1,m-1
+      do i=1,n-1
+      do j=1,m-1
          npa=npa+1
          ips = ips +1
          if(npa.le.mpat)keypa(npa)=ips
@@ -83,18 +83,20 @@ c
          aps(1,ips)=dble(ndu)
          aps(2,ips)=dble(ndv)
          aps(3,ips)=xl
-         do 20 jj=1,ndv
-         do 20 ii=1,ndu
+         do jj=1,ndv
+         do ii=1,ndu
             ips = ips+1
             if(ips.gt.msul)then
-              go to 20
+              exit
             endif
             read(ifio,rec=key+ips)ax,ay,az
             aps(1,ips)=ax
             aps(2,ips)=ay
             aps(3,ips)=az
-20       continue
-10    continue
+         end do
+         end do
+      end do
+      end do
       if(npa.gt.mpat)then
         write(ito,*)' ERROR LOAS2D : 001'
         write(ito,*)' too many patches on surface'

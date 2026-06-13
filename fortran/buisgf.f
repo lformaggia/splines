@@ -81,7 +81,7 @@ c      write(kfio,rec=nlsur)inksur,n,m
 c
 c start loop over patches
 c
-      do 10 i=1,(n-1)*(m-1)
+      do i=1,(n-1)*(m-1)
         ipa = i
         kpa = keypa(ipa)
         xl  = aps(3,kpa)
@@ -93,13 +93,14 @@ c
 c
 c loop over corfficents
 c
-        do 20 jj=1,nv
-        do 20 ii=1,nu
+        do jj=1,nv
+        do ii=1,nu
            write(ifio,rec=inksur)(aps(id,kpa),id=1,3)
            inksur = inksur+ 1
            kpa    = kpa   + 1
-20      continue
-10    continue
+        end do
+        end do
+      end do
       return
       end
 C

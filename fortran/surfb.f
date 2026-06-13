@@ -118,8 +118,8 @@ C
      1            rest(ip4),rest(ip5),rest(ip6),rest(ip7),
      1            rest(ip8),ispt3)
       ipa = 1
-      do 10 i=1,n-1
-      do 10 j=1,m-1
+      do i=1,n-1
+      do j=1,m-1
         npa = j+(i-1)*(m-1)
         keypa(npa)=ipa
         ch1 = rest(12*n*m + 1 + (i-1)*2 + (j-1)*2*n)
@@ -132,14 +132,17 @@ c        xl=0.5*(choret(1,i,j)+choret(2,i,j))
         aps(3,ipa)=xl
         ipa = ipa+1
 c
-        do 20 jj=1,4
-        do 20 ii=1,4
-        do 20 id=1,3
+        do jj=1,4
+        do ii=1,4
+        do id=1,3
            aps(id,ipa)=apatch(id,ii,jj)
            ipa=ipa+1
-20      continue
+        end do
+        end do
+        end do
 c
-10    continue
+      end do
+      end do
       return
       end
 C

@@ -213,9 +213,12 @@ all:: $(DEFAULT_TARGET)
 $(LIBRARY_NAME): $(ALL_LIB_OBJS)
 	ar rcs $(LIBRARY_NAME) $(ALL_LIB_OBJS)
 	$(RANLIB) $(LIBRARY_NAME)
-#$(EXE_TO_INSTALL): $(LIBRARY_NAME) $(F_MAINOBJS)  
+#$(EXE_TO_INSTALL): $(LIBRARY_NAME) $(F_MAINOBJS)
 #	$(FLINK) $(LFLAGS) -o $@ $(F_MAINOBJS) $(F77_LIBS)
 
+# Test suite target
+test_splines: test_splines.f90 $(LIBRARY_NAME)
+	$(F77) $(F77_SWITCHES) -o $@ $< $(F77_LIBS)
 
 make_target_arch:
 	echo "TARGET_ARCH=$(TARGET_ARCH)" >target_arch.make
@@ -315,12 +318,14 @@ install-doc: $(DOC_FILES)
 
 #install-man:
 
-check: $(EXE_FOR_CHECK)
+check: $(EXE_FOR_CHECK) test_splines
 	@echo "Running test_program"
 	$(EXE_FOR_CHECK)
+	@echo "Running Fortran spline test suite"
+	./test_splines
 
 clean:
-	-rm -f lib*.a *.o core *~ \#* *.exe a.out
+	-rm -f lib*.a *.o core *~ \#* *.exe a.out test_splines
 	-rm -f *.tmp *_tmp.f *.expanded
 	-rm -f *.inc
 	-rm -f *.prj

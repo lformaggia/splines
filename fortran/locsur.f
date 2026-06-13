@@ -54,12 +54,13 @@ c
          j0=j
          if(ispa.eq.0)then
          xl=max(choret(1,i,j),choret(2,i,j))
-         else
+      else
          xl =0.d0
-         do 143 id =1,ndimn
-143        xl = xl + (apatch(id,1,1)-
+         do id =1,ndimn
+           xl = xl + (apatch(id,1,1)-
      1         (apatch(id,1,1)+apatch(id,2,1)+apatch(id,3,1)+
      1          apatch(id,4,1)))**2
+         end do
          xl =sqrt(xl)
       endif
       endif
@@ -67,9 +68,10 @@ c
       call gpsur(ndimn,u,v,r,apatch)
 c
       dist = 0.d0
-      do 10 id=1,ndimn
+      do id=1,ndimn
         z(id) = r(id) - x(id)
-10      dist = dist + z(id)*z(id)
+        dist = dist + z(id)*z(id)
+      end do
       dist = sqrt(dist)
       if(dist.lt.eps1*xl)return
 c
@@ -78,10 +80,10 @@ c
       call gders1(ndimn,ru,rv,ruv,ruu,rvv,apatch,u,v)
       h(1) = 0.d0
       h(2) = 0.d0
-      do 20 id=1,ndimn
+      do id=1,ndimn
         h(1) = h(1) + z(id)*ru(id)
         h(2) = h(2) + z(id)*rv(id)
-20    continue
+      end do
 c
       beta = sqrt(h(1)**2+h(2)**2)
 c
@@ -111,12 +113,12 @@ c
       h11  = h(1)*h(1)
       h22  = h(2)*h(2)
       h12  = h(1)*h(2)
-      do 50 id=1,ndimn
+      do id=1,ndimn
        xden = xden + h11*ru(id)*ru(id)+2.d0*h12*ru(id)*rv(id)+
      1               h22*rv(id)*rv(id)
        xpp  = xpp  +(h11*ruu(id)+h22*rvv(id)+2.d0*h12*ruv(id))*
      1               z(id)
-50    continue
+      end do
       if(xpp+xden.gt.eps3*xl*xl)xden = xden+xpp
       da = -beta/xden
 c

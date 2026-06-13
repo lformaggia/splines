@@ -41,11 +41,12 @@ C
       real*8 c13,c19,q(4,4),qferg(ndimn,4,4),bbez(ndimn,4,4)
       parameter(c13=1.d0/3.d0,c19=1.d0/9.d0)
 c
-      do 10 i=1,ndimn
-        do 5 j=1,4
-        do 5 k=1,4
+      do i=1,ndimn
+        do j=1,4
+        do k=1,4
           q(k,j) = qferg(i,k,j)
-    5   continue
+        end do
+        end do
         bbez(i,1,1) = q(1,1)
         bbez(i,1,2) = q(1,1)+c13*q(1,3)
         bbez(i,1,3) = q(1,2)-c13*q(1,4)
@@ -65,7 +66,7 @@ c
         bbez(i,4,2) = q(2,1)+c13*q(2,3)
         bbez(i,4,3) = q(2,2)-c13*q(2,4)
         bbez(i,4,4) = q(2,2)
-10    continue
+      end do
       return
       end
 C

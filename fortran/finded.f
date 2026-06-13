@@ -135,8 +135,8 @@ C
       narc = na
       iarc = 0
       ixx  = 0
-      do 10 i=ist,ien
-      do 10 j=jst,jen
+      do i=ist,ien
+      do j=jst,jen
          iarc = iarc +1
          k = j+(i-1)*(m-1)
          kpa=keypa(k)
@@ -157,77 +157,78 @@ c
          xln1d(2,ico) = xl
          ico          = ico +1
          if(iedg.eq.1)then
-               do 70 k=1,ndu
+               do k=1,ndu
                  a1=aps(1,kpa+(1-1)*ndu+k)
                  a2=aps(2,kpa+(1-1)*ndu+k)
                  a3=aps(3,kpa+(1-1)*ndu+k)
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
-                   go to 70
+                   exit
                  endif
                  xln1d(1,ico) = a1
                  xln1d(2,ico) = a2
                  xln1d(3,ico) = a3
                  ico          = ico +1
-70             continue
+               end do
          else if(iedg.eq.3)then
-               do 71 k=1,ndu
+               do k=1,ndu
                  a1=aps(1,kpa+(1-1)*ndu+k)
                  a2=aps(2,kpa+(1-1)*ndu+k)
                  a3=aps(3,kpa+(1-1)*ndu+k)
-                 do 72 kk=2,ndv
+                 do kk=2,ndv
                    a1=a1+aps(1,kpa+(kk-1)*ndu+k)
                    a2=a2+aps(2,kpa+(kk-1)*ndu+k)
                    a3=a3+aps(3,kpa+(kk-1)*ndu+k)
-72               continue
+                 end do
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
-                   go to 71
+                   exit
                  endif
                  xln1d(1,ico) = a1
                  xln1d(2,ico) = a2
                  xln1d(3,ico) = a3
                  ico          = ico +1
-71              continue
+              end do
          else if(iedg.eq.4)then
-               do 80 k=1,ndv
+               do k=1,ndv
                  a1=aps(1,kpa+(k-1)*ndu+1)
                  a2=aps(2,kpa+(k-1)*ndu+1)
                  a3=aps(3,kpa+(k-1)*ndu+1)
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
-                   go to 80
+                   exit
                  endif
                  xln1d(1,ico) = a1
                  xln1d(2,ico) = a2
                  xln1d(3,ico) = a3
                  ico          = ico +1
-80             continue
+               end do
          else if(iedg.eq.2)then
-               do 81 k=1,ndv
+               do k=1,ndv
                  a1=aps(1,kpa+(k-1)*ndu+1)
                  a2=aps(2,kpa+(k-1)*ndu+1)
                  a3=aps(3,kpa+(k-1)*ndu+1)
-                 do 82 kk=2,ndu
+                 do kk=2,ndu
                    a1=a1+aps(1,kpa+(k-1)*ndu+kk)
                    a2=a2+aps(2,kpa+(k-1)*ndu+kk)
                    a3=a3+aps(3,kpa+(k-1)*ndu+kk)
-82               continue
+                 end do
                  if (ico.gt.msel)then
                    ixx = ico
                    ico = ico+1
-                   go to 81
+                   exit
                  endif
                  xln1d(1,ico) = a1
                  xln1d(2,ico) = a2
                  xln1d(3,ico) = a3
                  ico          = ico +1
-81              continue
+              end do
          endif
-10     continue
+      end do
+      end do
 c
        if(ixx.ne.0)then
          write(ito,*)' ERROR IN FINDED : 002'

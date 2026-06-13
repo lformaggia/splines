@@ -73,7 +73,7 @@ c
         j    = max(0,min(int(value),m-1))
         v    = value -j
 c
-        do 10 i=1,n-1
+        do i=1,n-1
           if(i.le.marc)isn(i) = iarc
           npa = j + (i-1)*(m-1)
           kpa = keypa(npa)
@@ -87,31 +87,32 @@ c
           xln1d(2,iarc)=xl
           iarc         = iarc + 1
 c
-          do 11  ii = 1,ndu
-             do 12 id=1,3
+          do ii = 1,ndu
+             do id=1,3
                coef(id) =0.d0
-12           continue
-             do 13 jj = ndv,1,-1
-             do 13 id = 1,3
+             end do
+             do jj = ndv,1,-1
+             do id = 1,3
                coef(id) = coef(id)*v + aps(id,kpa+(jj-1)*ndu+ii)
-13           continue
+             end do
+             end do
              if(iarc.gt.msel)then
                 ixx =iarc
                 iarc=iarc +1
-                go to 11
+                exit
              endif
              xln1d(1,iarc) = coef(1)
              xln1d(2,iarc) = coef(2)
              xln1d(3,iarc) = coef(3)
              iarc          = iarc + 1
-11        continue
-10      continue
+          end do
+        end do
       else
         narc = m
         i    = max(0,min(int(value),n-1))
         u    = value -i
 c
-        do 20 j=1,m-1
+        do j=1,m-1
           if(j.le.marc)isn(j)= iarc
           npa = j + (i-1)*(m-1)
           kpa = keypa(npa)
@@ -125,25 +126,26 @@ c
           xln1d(2,iarc)=xl
           iarc         = iarc + 1
 c
-          do 21  jj = 1,ndv
-             do 22 id=1,3
+          do jj = 1,ndv
+             do id=1,3
                coef(id) =0.d0
-22           continue
-             do 23 ii = ndu,1,-1
-             do 23 id = 1,3
+             end do
+             do ii = ndu,1,-1
+             do id = 1,3
                coef(id) = coef(id)*u + aps(id,kpa+(jj-1)*ndu+ii)
-23           continue
+             end do
+             end do
              if(iarc.gt.msel)then
                 ixx =iarc
                 iarc=iarc +1
-                go to 21
+                exit
              endif
              xln1d(1,iarc) = coef(1)
              xln1d(2,iarc) = coef(2)
              xln1d(3,iarc) = coef(3)
              iarc          = iarc + 1
-21        continue
-20      continue
+          end do
+        end do
       endif
 c
 c error handling

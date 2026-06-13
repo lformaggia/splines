@@ -133,11 +133,12 @@ c get r,v along the u=cost lines
 c
       ispty(1)=one
       ispty(2)=one
-      do 100 i=1,n
-         do 110 j=1,m
-         do 110 id=1,ndimn
+      do i=1,n
+         do j=1,m
+         do id=1,ndimn
              q(id,j) = coor(id,iretp(i,j))
-110      continue
+         end do
+         end do
          call cholen(ndimn,m,q,cs)
          if(abs(ispt3(2,1)).eq.1)then
             ispty(1)=one
@@ -162,22 +163,24 @@ c
             ispty(2)=ispt3(2,2)
          endif
          call evtan(ndimn,m,q,cs,a,b,c,t,ispty,timp)
-         do 120 j=1,m
-         do 120 id=1,ndimn
+         do j=1,m
+         do id=1,ndimn
              tanret(id,2,i,j)=t(id,j)
-120       continue
-          do 130 j=1,m-1
+         end do
+         end do
+         do j=1,m-1
              choret(2,i,j)=cs(j)
-130       continue
-100   continue
+         end do
+      end do
 c
 c interpolate r,u along v=cost lines
 c
-      do 200 j=1,m
-         do 210 i=1,n
-         do 210 id=1,ndimn
+      do j=1,m
+         do i=1,n
+         do id=1,ndimn
              q(id,i) = coor(id,iretp(i,j))
-210      continue
+         end do
+         end do
          call cholen(ndimn,n,q,cs)
          if(abs(ispt3(1,1)).eq.1)then
             ispty(1)=one
@@ -203,25 +206,27 @@ c
          endif
          call evtan(ndimn,n,q,cs,a,b,c,t,ispty,timp)
 c
-         do 220 i=1,n
-         do 220 id=1,ndimn
+         do i=1,n
+         do id=1,ndimn
              tanret(id,1,i,j)=t(id,i)
-220       continue
-          do 230 i=1,n-1
+         end do
+         end do
+         do i=1,n-1
              choret(1,i,j)=cs(i)
-230       continue
-200   continue
+         end do
+      end do
 c
 c evaluate r,vu along the u lines j=1 and j=m
 c
 c
-      do 400 k=1,2
+      do k=1,2
         if(k.eq.1)j=1
         if(k.eq.2)j=m
-        do 410 i=1,n
-        do 410 id=1,ndimn
+        do i=1,n
+        do id=1,ndimn
            q(id,i) = tanret(id,2,i,j)
-410     continue
+        end do
+        end do
          if(abs(ispt3(3,1)).eq.1)then
             ispty(1)=one
             call gtimp(ndimn,timp,q,n,one)
@@ -246,16 +251,17 @@ c
             ispty(2)=ispt3(3,2)
          endif
 c
-        do 420 i=1,n-1
+        do i=1,n-1
            cs(i) = choret(1,i,j)
-420     continue
+        end do
 c
         call evtan(ndimn,n,q,cs,a,b,c,t,ispty,timp)
-        do 430 i=1,n
-        do 430 id=1,ndimn
+        do i=1,n
+        do id=1,ndimn
            tanret(id,3,i,j)=t(id,i)
-430     continue
-400   continue
+        end do
+        end do
+      end do
 c
 c again: interpolate r,uv vorking along the v lines and
 c using as boundary condition the tangent evaluated in the
@@ -264,28 +270,30 @@ c
       ispty(1) = one
       ispty(2) = one
 c
-      do 500 i=1,n
+      do i=1,n
 c
-        do 510 j=1,m
-        do 510 id=1,ndimn
+        do j=1,m
+        do id=1,ndimn
            q(id,j) = tanret(id,1,i,j)
-510     continue
-        do 520 j=1,m-1
+        end do
+        end do
+        do j=1,m-1
            cs(j)   = choret(2,i,j)
-520     continue
+        end do
 c
-        do 522 id=1,ndimn
+        do id=1,ndimn
           timp(id)       =tanret(id,3,i,1)
           timp(id+ndimn) =tanret(id,3,i,m)
-522     continue
+        end do
 c
         call evtan(ndimn,m,q,cs,a,b,c,t,ispty,timp)
 c
-        do 540 j=1,m
-        do 540 id=1,ndimn
+        do j=1,m
+        do id=1,ndimn
            tanret(id,3,i,j) = t(id,j)
-540     continue
-500   continue
+        end do
+        end do
+      end do
       return
       end
 C

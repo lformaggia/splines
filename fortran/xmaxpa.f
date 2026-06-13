@@ -53,24 +53,24 @@ c
 c
       np =0
       k  =0
-      do 10 id=1,3
+      do id=1,3
         xmax(id,1)= 1.d32
         xmax(id,2)=-1.d32
-10     continue
+      end do
 c
-       do 500 j=1,m-1
+       do j=1,m-1
          kkv=0
          if(j.eq.m-1)kkv=1
-         do 530 kv=0,kkv
+         do kv=0,kkv
            v=dble(kv)
-           do 510 i=1,n-1
+           do i=1,n-1
              kku =0
              if(i.eq.n-1)kku=1
              npa =(i-1)*(m-1)+j
              kpa =keypa(npa)
              nu = aps(1,kpa)
              nv = aps(2,kpa)
-             do 510 ku=0,kku
+             do ku=0,kku
                u=dble(ku)
                k = k +1
                call evsurg(aps(1,kpa),u,v,nu,nv,xp,
@@ -86,9 +86,10 @@ c
                c3d(2,np)=xp(2)
                c3d(3,np)=xp(3)
 c
-510        continue
-530      continue
-500   continue
+             end do
+           end do
+         end do
+       end do
       return
       end
 C

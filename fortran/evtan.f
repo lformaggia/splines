@@ -57,14 +57,15 @@ C
       parameter(zero=1.d-10)
 c
       cmax = cs(1)
-      do 1 i=2,n-1
+      do i=2,n-1
        cmax = max(cmax,cs(i))
- 1    continue
+      end do
       if(abs(cmax).lt.zero)then
-        do 4 i=1,n
-        do 4 id=1,ndimn
+        do i=1,n
+        do id=1,ndimn
                          t(id,i)=0.d0
-4       continue
+        end do
+        end do
         return
       endif
 c

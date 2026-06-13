@@ -120,7 +120,7 @@ c
 c
 c Set tri-di system for interior points
 c
-      do 10 i=2,n-1
+      do i=2,n-1
         a1   = cs(i  )
         c1   = cs(i-1)
         if (abs(a1).lt.zero)a1=zero
@@ -128,19 +128,20 @@ c
         a(i) = a1
         b(i) = 2.d0*(a1+c1)
         c(i) = c1
-        do 10 id=1,ndimn
+        do id=1,ndimn
          t(id,i) = (3.d0/(a1*c1))*
      1                  (c1*c1*(q(id,i+1)-q(id,i  ))+
      1                   a1*a1*(q(id,i  )-q(id,i-1)) )
-10    continue
+        end do
+      end do
 c
       if(ii1.eq.1.or.ii1.eq.2)then
 c
 c tangent imposed
 c
-         do 30 id = 1,ndimn
+         do id = 1,ndimn
             t(id   ,1)=timp(id,1)
-30       continue
+         end do
          b(1)=1
          c(1)=0
          a(1)=0
@@ -148,9 +149,9 @@ c
 c
 c natural spline
 c
-         do 40 id =1,ndimn
+         do id =1,ndimn
             t(id   ,1)=3.d0*(q(id   ,2) -q(id,1))
-40       continue
+         end do
          b(1)=2.d0*cs(1)
          c(1)=cs(1)
          a(1)=0.d0
@@ -163,12 +164,12 @@ c
          i0 = 1
          i1 = 2
          i2 = 3
-         do 33 id=1,ndimn
+         do id=1,ndimn
             t(id,1)=
      1      -q(id,i0)*(2*cs(i0)+cs(i1))/(beta*cs(i0))+
      1      q(id,i1)*beta/(cs(i0)*cs(i1))-
      1      q(id,i2)*(cs(i0)/(cs(i1)*beta))
-33       continue
+         end do
 c
          a(1)=0.d0
          b(1)=1.d0
@@ -180,9 +181,9 @@ c quadratic
 c
          i0 = 1
          i1 = 2
-         do 34 id=1,ndimn
+         do id=1,ndimn
             t(id,1)=2.d0*(q(id,i1)-q(id,i0))/cs(i0)
-34       continue
+         end do
          a(1)=0.d0
          b(1)=1.d0
          c(1)=1.d0
@@ -195,12 +196,12 @@ c
          i1 = 2
          i2 = 3
          beta=b(2)
-         do 35 id=1,ndimn
+         do id=1,ndimn
             t(id,1)=
      1      (q(id,i2)-q(id,i1))*(cs(i0)*cs(i0))/cs(i1)+
      1      (q(id,i1)-q(id,i0))*(cs(i1)/cs(i0))*
      1          (3*cs(i0)+2*cs(i1))
-35       continue
+         end do
          a(1)=0.d0
          b(1)=cs(i1)*beta
          c(1)=beta*beta
@@ -210,9 +211,9 @@ c
 c
 c tangent imposed
 c
-         do 32 id = 1,ndimn
+         do id = 1,ndimn
             t(id   ,n)=timp(id,2)
-32       continue
+         end do
          b(n)=1.d0
          a(n)=0.d0
          c(n)=0.d0
@@ -220,9 +221,9 @@ c
 c
 c natural spline
 c
-         do 41 id =1,ndimn
+         do id =1,ndimn
             t(id   ,n)=3.d0*(q(id   ,n) -q(id,n-1) )
-41       continue
+         end do
          b(n)=2.d0*cs(n-1)
          a(n)=cs(n-1)
          c(n)=0.d0
@@ -236,12 +237,12 @@ c
          i1 = n-1
          i2 = n-2
          beta=b(n-1)/2.d0
-         do 43 id=1,ndimn
+         do id=1,ndimn
             t(id,n)=
      1      q(id,i0)*(2*cs(i1)+cs(i2))/(beta*cs(i1))-
      1      q(id,i1)*beta/(cs(i1)*cs(i2))+
      1      q(id,i2)*(cs(i1)/(cs(i2)*beta))
-43       continue
+         end do
 c
          a(n)=0.d0
          b(n)=1.d0
@@ -253,12 +254,12 @@ c quadratic
 c
          i0 = n-1
          i1 = n
-         do 44 id=1,ndimn
+         do id=1,ndimn
             t(id,n)=2.d0*(q(id,i1)-q(id,i0))/cs(i0)
-44       continue
+         end do
          a(n)=1.d0
          b(n)=1.d0
-         c(1)=0.d0
+         c(n)=0.d0
 c
       else if(ii2.eq.5)then
 c
@@ -268,12 +269,12 @@ c
          i1 = n-1
          i2 = n-2
          beta=b(n-1)
-         do 45 id=1,ndimn
+         do id=1,ndimn
             t(id,n)=
      1   (q(id,i1)-q(id,i2))*(cs(i1)*cs(i1))/cs(i2)+
      1   (q(id,i0)-q(id,i1))*(cs(i2)/cs(i1))*
      1   (3.d0*cs(i1)+2.d0*cs(i2))
-45       continue
+         end do
          a(n)=beta*beta
          b(n)=cs(i2)*beta
          c(n)=0.d0

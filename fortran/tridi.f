@@ -12,10 +12,10 @@ c
 c
       n1=n-1
 c
-      do 1 i=2,n1
-      b(i)=b(i)-a(i)*c(i-1)
-      c(i)=c(i)/b(i)
-    1 continue
+      do i=2,n1
+        b(i)=b(i)-a(i)*c(i-1)
+        c(i)=c(i)/b(i)
+      end do
 c
       i=n
       b(i)=b(i)-a(i)*c(i-1)
@@ -33,15 +33,15 @@ c
       i=1
       d(i)=d(i)/b(i)
 c
-      do 1 i=2,n
-      d(i)=(d(i)-a(i)*d(i-1))/b(i)
-    1 continue
+      do i=2,n
+        d(i)=(d(i)-a(i)*d(i-1))/b(i)
+      end do
 c
       n1=n-1
-      do 2 ib=1,n1
-      i=n-ib
-      d(i)=d(i)-c(i)*d(i+1)
-    2 continue
+      do ib=1,n1
+        i=n-ib
+        d(i)=d(i)-c(i)*d(i+1)
+      end do
 c
       return
       end
@@ -54,21 +54,23 @@ c
 c back substitution .. multiple d
 c
       i=1
-      do 10 id=1,m
-      d(id,i)=d(id,i)/b(i)
-10    continue
+      do id=1,m
+        d(id,i)=d(id,i)/b(i)
+      end do
 c
-      do 1 i=2,n
-      do 1 id=1,m
-      d(id,i)=(d(id,i)-a(i)*d(id,i-1))/b(i)
-    1 continue
+      do i=2,n
+      do id=1,m
+        d(id,i)=(d(id,i)-a(i)*d(id,i-1))/b(i)
+      end do
+      end do
 c
       n1=n-1
-      do 2 ib=1,n1
-      i=n-ib
-      do 2 id=1,m
-      d(id,i)=d(id,i)-c(i)*d(id,i+1)
-    2 continue
+      do ib=1,n1
+        i=n-ib
+        do id=1,m
+          d(id,i)=d(id,i)-c(i)*d(id,i+1)
+        end do
+      end do
 c
       return
       end

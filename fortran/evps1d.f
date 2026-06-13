@@ -53,45 +53,49 @@ c
       ndeg = int(xl(1,0))
       if(in.eq.-1)go to 31
 c
-      do 1 id=1,3
-1     xp(id)=xl(id,ndeg)
-      do 2 k=ndeg-1,1,-1
-      xp(1) = xp(1)*u+xl(1,k)
-      xp(2) = xp(2)*u+xl(2,k)
-      xp(3) = xp(3)*u+xl(3,k)
-2     continue
+      do id=1,3
+        xp(id)=xl(id,ndeg)
+      end do
+      do k=ndeg-1,1,-1
+        xp(1) = xp(1)*u+xl(1,k)
+        xp(2) = xp(2)*u+xl(2,k)
+        xp(3) = xp(3)*u+xl(3,k)
+      end do
 31    continue
 c
       if(in.eq.1)return
 c
-      do 11 id=1,3
-11    xd(id)=(ndeg-1)*xl(id,ndeg)
-      do 12 k=ndeg-1,2,-1
-      xm = dble(k-1)
-      xd(1) = xd(1)*u+xm*xl(1,k)
-      xd(2) = xd(2)*u+xm*xl(2,k)
-      xd(3) = xd(3)*u+xm*xl(3,k)
-12    continue
+      do id=1,3
+        xd(id)=(ndeg-1)*xl(id,ndeg)
+      end do
+      do k=ndeg-1,2,-1
+        xm = dble(k-1)
+        xd(1) = xd(1)*u+xm*xl(1,k)
+        xd(2) = xd(2)*u+xm*xl(2,k)
+        xd(3) = xd(3)*u+xm*xl(3,k)
+      end do
       sz = sqrt(xd(1)**2+xd(2)**2+xd(3)**2)
       if(in.eq.2.or.in.eq.-1)return
 c
-      do 21 id=1,3
-21    xdd(id)=0
-      do 22 k=ndeg,3,-1
-      xm = dble((k-1)*(k-2))
-      xdd(1) = xdd(1)*u+xm*xl(1,k)
-      xdd(2) = xdd(2)*u+xm*xl(2,k)
-      xdd(3) = xdd(3)*u+xm*xl(3,k)
-22    continue
+      do id=1,3
+        xdd(id)=0
+      end do
+      do k=ndeg,3,-1
+        xm = dble((k-1)*(k-2))
+        xdd(1) = xdd(1)*u+xm*xl(1,k)
+        xdd(2) = xdd(2)*u+xm*xl(2,k)
+        xdd(3) = xdd(3)*u+xm*xl(3,k)
+      end do
 c
-      do 33 id=1,3
-33    xddd(id)=0.
-      do 32 k=ndeg,4,-1
-      xm = dble((k-1)*(k-2)*(k-3))
-      xddd(1) = xddd(1)*u+xm*xl(1,k)
-      xddd(2) = xddd(2)*u+xm*xl(2,k)
-      xddd(3) = xddd(3)*u+xm*xl(3,k)
-32    continue
+      do id=1,3
+        xddd(id)=0.
+      end do
+      do k=ndeg,4,-1
+        xm = dble((k-1)*(k-2)*(k-3))
+        xddd(1) = xddd(1)*u+xm*xl(1,k)
+        xddd(2) = xddd(2)*u+xm*xl(2,k)
+        xddd(3) = xddd(3)*u+xm*xl(3,k)
+      end do
 c
       return
       end

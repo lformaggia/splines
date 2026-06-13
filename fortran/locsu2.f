@@ -63,12 +63,13 @@ c
          j0=j
          if(ispa.eq.0)then
          xl=max(choret(1,i,j),choret(2,i,j))
-         else
+      else
          xl =0.d0
-         do 143 id =1,ndimn
-143        xl = xl + (apatch(id,1,1)-
+         do id =1,ndimn
+           xl = xl + (apatch(id,1,1)-
      1         (apatch(id,1,1)+apatch(id,2,1)+apatch(id,3,1)+
      1          apatch(id,4,1)))**2
+         end do
          xl =sqrt(xl)
       endif
       endif
@@ -76,19 +77,20 @@ c
       call gpsur(ndimn,u,v,r,apatch)
 c
       dist = 0.d0
-      do 10 id=1,ndimn
+      do id=1,ndimn
         z(id) = r(id) - x(id)
-10      dist = dist + z(id)*z(id)
+        dist = dist + z(id)*z(id)
+      end do
       dist = sqrt(dist)
       if(dist.lt.eps1*xl)return
 c
       call gders1(ndimn,ru,rv,ruv,ruu,rvv,apatch,u,v)
       xgr1 = 0.d0
       xgr2 = 0.d0
-      do 20 id=1,ndimn
+      do id=1,ndimn
         xgr1 = xgr1 + z(id)*ru(id)
         xgr2 = xgr2 + z(id)*rv(id)
-20    continue
+      end do
 c
       beta = sqrt(xgr1**2+xgr2**2)
 c
@@ -114,11 +116,11 @@ c                      | b   c |
       a = 0.d0
       b = 0.d0
       c = 0.d0
-      do 90 id=1,ndimn
+      do id=1,ndimn
         a = a + ru(id)*ru(id)
         b = b + ru(id)*rv(id)
         c = c + rv(id)*rv(id)
-90    continue
+      end do
       det = 1.d0/(a*c-b*b)
       du = det*(c*xgr1 - b*xgr2)
       dv = det*(a*xgr2 - b*xgr1)

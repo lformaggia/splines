@@ -63,8 +63,8 @@ c
 c
 c start loop on patches
 c
-      do 10 i=1,n-1
-      do 10 j=1,m-1
+      do i=1,n-1
+      do j=1,m-1
         npa = npa +1
         keypa(npa) = lastpa
 c
@@ -82,15 +82,17 @@ c
 c
 c store coefficents
 c
-        do 20 jj=1,4
-        do 20 ii=1,4
+        do jj=1,4
+        do ii=1,4
           lastpa = lastpa +1
-          do 25 id =1,3
+          do id =1,3
             aps(id,lastpa)=apatch(id,ii,jj)
-25       continue
-20      continue
+          end do
+        end do
+        end do
 c
-10    continue
+      end do
+      end do
       return
       end
 C

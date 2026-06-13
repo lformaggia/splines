@@ -62,7 +62,7 @@ c
       s  = 0.d0
       ir = is+1
       clen = cs(is)
-      do 10 id=1,ndimn
+      do id=1,ndimn
          r12 = q(id,ir-1) - q(id,ir )
          t1  = t(id,ir-1)
          t2  = t(id,ir  )
@@ -80,12 +80,13 @@ c
          xdd(id) =   6.d0*a1*u + 2.d0*a2
          xddd(id)=   6.d0*a1
          s       =   s + xd(id)**2
- 10   continue
+      end do
       s  = sqrt(s)
       if (in.ne.0)then
         s1=1.d0/s
-        do 30 i=1,ndimn
-30      xd(i)  = xd(i)*s1
+        do i=1,ndimn
+          xd(i)  = xd(i)*s1
+        end do
       endif
       return
       end
