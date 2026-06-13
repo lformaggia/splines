@@ -1,0 +1,142 @@
+================================================================================
+BUG FIX DETAILS: Arc Length Computation Error (BUG #2)
+================================================================================
+
+SYMPTOM
+================================================================================
+
+Arc lengths computed are systematically larger than expected:
+- For 3D straight line (expected 5.0): computed 6.555 (+31.1%)
+- For circle (expected 5.585): computed NaN (integration fails)
+
+TECHNICAL DETAILS
+================================================================================
+
+The arc length computation uses the following pipeline:
+
+1. psplin.f: Master routine
+   - Calls evtan to compute tangent vectors t at knots
+   - Calls slen to compute arc lengths
+
+2. slen.f: Computes arc length for each segment
+   - Loop for each segment i=1,n-1:
+     - Calls coeff to compute polynomial coefficients for ||x,u||^2
+     - Calls lengt to integrate sqrt(||x,u||^2) from u=0 to u=1
+
+3. coeff.f: Computes polynomial ||x,u||^2 = a1 + a2*u + a3*u^2 + a4*u^3 + a5*u^4
+   - Uses Hermite cubic spline formulation
+   - Depends on:
+     * Knot positions q
+     * Tangent vectors t (scaled by chord length)
+     * Chord length cs
+
+4. lengt.f: Integrates sqrt(polynomial) using Romberg quadrature
+
+INVESTIGATION STRATEGY
+================================================================================
+
+Issue could be in several places:
+
+A. TANGENT VECTOR SCALING (most likely)
+   ------------------------------------
+   According to psplin documentation (psplin.f lines 64-71):
+   - t = dx/dc where c is "chord-length-scaled parameter"
+   - For actual derivative: dx/du = t * cs
+
+   In coeff.f (lines 59-60):
+   - p = len * t(id,i-1)
+   - z = len * t(id,i)
+
+   These should be dx/du at the segment endpoints.
+
+   HYPOTHESIS: The tangent vector scaling may be incorrect, or the
+   interpretation of the scaling factor may differ between psplin and coeff.
+
+B. POLYNOMIAL COEFFICIENTS (coeff.f)
+   --------------------------------
+   The coeff routine computes coefficients s, f for a polynomial representation.
+   The formulas (lines 63-64) are:
+   - s = 3.0 * (2.0*r12 + p + z)
+   - f = 2.0 * (-3.0*r12 - 2.0*p - z)
+
+   These appear to be related to Hermite cubic interpolation. For a straight
+   line where t = constant:
+   - The polynomial should reduce to ||dx/du||^2 = ||t||^2 = constant
+   - Arc length integral should equal cs * ||t||
+
+   NEED TO VERIFY: Do the polynomial coefficients produce the correct
+                   ||x,u||^2 for test cases?
+
+C. INTEGRATION (lengt.f/qrombs)
+   ---------------------------
+   The integration uses Romberg adaptive quadrature via trapezoids.
+   - trapzds computes trapezoidal rule approximations
+   - qrombs uses Richardson extrapolation
+
+   NEED TO VERIFY: Is the integration method working correctly?
+
+ROOT CAUSE ANALYSIS APPROACH
+================================================================================
+
+1. Create a test that:
+   - Creates a straight line segment
+   - Manually computes expected ||x,u||^2 polynomial
+   - Calls coeff.f and compares coefficients
+   - Manually integrates the polynomial
+
+2. If coefficients are wrong:
+   - Debug the mathematical formulas in coeff.f
+   - Check whether tangent vectors are correctly scaled
+
+3. If integration is wrong:
+   - Test the integration with a known function
+   - Debug the Romberg quadrature implementation
+
+4. Check whether the issue is parameter-dependent:
+   - Does it affect 2D more than 3D?
+   - Does it affect only curves or also straight lines?
+   - Does it depend on segment length?
+
+PROPOSED FIX (Investigative steps)
+================================================================================
+
+Step 1: Add debug output to coeff.f
+   Modify coeff to print computed polynomial coefficients and verify
+   against manually computed values for test segments.
+
+Step 2: Test integration independently
+   Create a test that calls lengt directly with known polynomial
+   coefficients (e.g., for a circle or straight line).
+
+Step 3: Verify tangent vector scaling
+   Check whether t values in psplin match expected derivatives dx/du
+   by comparing against numerical differentiation.
+
+Step 4: Review mathematical formulas
+   Verify that the Hermite cubic formulation in coeff.f matches
+   standard references (e.g., Faux & Pratt, Farin).
+
+REFERENCE
+================================================================================
+
+The code cites the following references:
+- Faux and Pratt, "Computational Geometry for Design and Manufacture",
+  Ellis-Horwood Ltd., 1979, pp. 223-226
+
+The Hermite cubic polynomial form should be:
+  x(u) = q0*(2u^3 - 3u^2 + 1) + q1*(-2u^3 + 3u^2)
+       + t0*(u^3 - 2u^2 + u)*cs + t1*(u^3 - u^2)*cs
+
+where:
+  u ∈ [0,1]
+  q0, q1: endpoint positions
+  t0, t1: endpoint tangents (scaled)
+  cs: chord length scaling
+
+The derivative is:
+  x'(u) = q0*(6u^2 - 6u) + q1*(-6u^2 + 6u)
+        + t0*(3u^2 - 4u + 1)*cs + t1*(3u^2 - 2u)*cs
+
+And ||x'(u)||^2 should be computed from this.
+
+================================================================================

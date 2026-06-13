@@ -1,0 +1,178 @@
+================================================================================
+BUG FIX DETAILS: NaN/Infinity in Tangent Vectors (BUG #3)
+================================================================================
+
+SYMPTOM
+================================================================================
+
+When computing tangent vectors for certain curve types (particularly circles),
+some tangent values become NaN or Infinity:
+
+From test output:
+  t(:, 1) = ( -0.18970221, ************), mag=    Infinity
+  t(:, 2) = ( -0.20586655, ************), mag=    Infinity
+
+INTERESTING OBSERVATION
+================================================================================
+
+This does NOT occur consistently:
+
+✗ FAILS: Circle (9+ points) with 9-point interpolation
+✗ FAILS: 3D straight lines get 31% arc length error
+✓ WORKS: 2D straight lines get correct arc length
+✓ WORKS: Parabolic curves compute tangents without NaN
+✓ WORKS: evtan when called directly (not through psplin)
+
+This suggests the issue may be:
+1. Dimension-dependent (2D vs 3D)
+2. Curve-geometry-dependent (straight vs curved)
+3. Related to interaction between psplin and slen (arc length computation)
+
+EXECUTION FLOW
+================================================================================
+
+The tangent vector computation flow:
+
+psplin.f
+  ├─ cholen:  Compute chord lengths cs
+  ├─ gtimp:   Get imposed tangents (if needed)
+  ├─ putimp:  Put imposed values into timp
+  ├─ evtan:   COMPUTE TANGENTS
+  │   ├─ trcoe:   Set up tridiagonal system
+  │   ├─ trif:    LU decomposition of tridiagonal matrix
+  │   └─ tris2:   Back substitution
+  └─ slen:    Compute arc lengths (uses tangents)
+      ├─ coeff:   Compute polynomial coefficients (uses tangents!)
+      └─ lengt:   Integrate to get arc length
+
+HYPOTHESIS: INTERACTION BETWEEN TANGENT VECTORS AND ARC LENGTH
+================================================================================
+
+The issue may not be in tangent computation itself, but in how the arc length
+computation (slen/coeff) uses the tangent values.
+
+From coeff.f (lines 59-60):
+    p = len*t(id,i-1)
+    z = len*t(id,i)
+
+The arc length polynomial coefficients depend on tangent values being scaled
+by chord length. If:
+
+A. The tangent values are unexpectedly large
+B. The chord lengths are unexpectedly small
+C. There's a division by zero or very small number somewhere
+
+Then the polynomial coefficients could become NaN/Inf, and when integrated,
+propagate the error back to the output (but the tangent output array would
+already be computed, so it shouldn't show NaN unless there's memory corruption).
+
+ACTUAL ISSUE: QROMBS FAILURE
+================================================================================
+
+The test output shows:
+  "QROMBS: too many steps."
+
+This is from lengt.f, line 168 in the Romberg quadrature routine.
+
+This error message appears when:
+1. The integration does not converge within jmax=20 iterations
+2. The polynomial ||x,u||^2 has problematic behavior
+
+Possible causes:
+A. Polynomial coefficients are NaN/Inf (bad tangents)
+B. Polynomial evaluation produces NaN for some u values
+C. The integrand sqrt(polynomial) has singularities or oscillations
+D. The tolerance eps is too tight for the precision available
+
+From slen.f, line 64:
+    eps1=eps*cs(i)
+
+The tolerance is scaled by chord length. For small chord lengths or bad
+polygon coefficients, this could cause convergence issues.
+
+DEBUGGING APPROACH
+================================================================================
+
+Step 1: Insert debug output in evtan
+    Print tangent values immediately after tridiagonal solver completes
+    to see if they're already corrupted, or if the issue occurs later.
+
+Step 2: Check tridiagonal solver stability
+    Review trif/tris2 for:
+    - Uninitialized variables (especially the 'save' statement in trapzds)
+    - Division by very small numbers
+    - Array bounds issues
+
+Step 3: Add guards in coeff
+    Before using tangent values, check for NaN/Inf:
+        if (isnan(p) .or. isnan(z)) then
+            print *, "Warning: NaN in tangent values"
+        endif
+
+Step 4: Instrument Romberg integration
+    Add debug output to qrombs to see:
+    - What values are being integrated
+    - How fast the convergence is
+    - At what iteration it exceeds jmax
+
+KNOWN ISSUE: UNINITIALIZED VARIABLE IN TRAPZDS
+================================================================================
+
+In lengt.f, trapzds.f has:
+
+    save it
+
+The variable 'it' is static (Fortran SAVE statement) and is used to track
+the number of iterations. If this variable is not properly initialized the
+first time the routine is called, it could cause undefined behavior.
+
+The initialization appears to be:
+    if (n.eq.1) then
+        ...
+        it=1
+
+So 'it' should be set to 1 on the first call (n=1). However, if trapzds
+is called in some unusual sequence, 'it' could be uninitialized.
+
+PROPOSED FIX (Investigative steps)
+================================================================================
+
+Priority 1: Add safety checks
+    In evtan.f, after calling trif/tris2, add checks:
+        do i = 1, n
+            do id = 1, ndimn
+                if (isnan(t(id,i)) .or. isinf(t(id,i))) then
+                    print *, 'ERROR: NaN/Inf in tangent at point', i
+                    t(id,i) = 0.0d0  ! or other fallback
+                endif
+            enddo
+        enddo
+
+Priority 2: Debug tridiagonal solver
+    Test trif/tris2 with known matrices to verify correctness
+    Check for division by zero or near-zero denominators
+
+Priority 3: Add bounds checking
+    In coeff.f, verify that polynomial coefficients are reasonable
+    before passing to integration
+
+Priority 4: Initialize 'it' explicitly
+    In trapzds.f, explicitly initialize:
+        save it
+        data it /0/
+    Or use parameter declaration instead of save
+
+REFERENCE
+================================================================================
+
+The IEEE floating point exceptions signalled during tests are:
+- IEEE_INVALID_FLAG: Indicates operations like sqrt(-1) or 0/0
+- IEEE_UNDERFLOW_FLAG: Indicates loss of significance
+- IEEE_DENORMAL: Indicates subnormal numbers
+
+These suggest that somewhere in the computation, there's:
+1. A sqrt of a negative number
+2. A division by zero or very small number
+3. Catastrophic cancellation loss of significance
+
+================================================================================

@@ -1,0 +1,110 @@
+================================================================================
+BUG REPORT: TRCOE.F - Quadratic End Condition Array Indexing Error
+================================================================================
+
+FILE: /home/forma/Dropbox/Work/ScientificComputing/Software/splines/fortran/trcoe.f
+LINE: 262
+SEVERITY: Critical
+
+================================================================================
+PROBLEM DESCRIPTION
+================================================================================
+
+In the quadratic end condition handler (ii2.eq.4), the code incorrectly sets
+c(1) instead of c(n):
+
+    Line 260-262:
+         a(n)=1.d0
+         b(n)=1.d0
+         c(1)=0.d0      <-- BUG: Should be c(n)=0.d0
+
+================================================================================
+WHY THIS IS A BUG
+================================================================================
+
+The trcoe subroutine sets up a tridiagonal system of equations for solving
+the spline tangent vectors. The system is stored in three arrays:
+- a(*): lower diagonal
+- b(*): main diagonal
+- c(*): upper diagonal
+
+For the end conditions (first and last rows), the code properly sets values
+for a(1), b(1), c(1) (first row) and a(n), b(n), c(n) (last row).
+
+However, in the quadratic end condition (ii2.eq.4) at line 262, when setting
+up the LAST row of the system, the code sets c(1)=0.d0 instead of c(n)=0.d0.
+
+This causes:
+1. The value c(1) to be incorrectly modified (should only be set once at the
+   beginning of the subroutine for first-row end conditions)
+2. The value c(n) to remain uninitialized or with garbage value
+3. The tridiagonal solver (trif/tris2) to operate on corrupted data
+4. The tangent vector computation to fail, producing NaN or Infinity values
+
+================================================================================
+IMPACT
+================================================================================
+
+This bug affects:
+- Any spline with quadratic end conditions (ispty(2)=4)
+- The tangent vector computation, which is fundamental to arc length and
+  curvature calculations
+- The test results show NaN values in tangent vectors and arc lengths
+
+Example from test_splines.f90 output:
+  t(:, 2) = ( -0.20586655, ************), mag=    Infinity
+  len( 1) =             NaN
+
+================================================================================
+PROPOSED FIX
+================================================================================
+
+Change line 262 from:
+         c(1)=0.d0
+
+To:
+         c(n)=0.d0
+
+The corrected section should read:
+    258         do id=1,ndimn
+    259            t(id,n)=2.d0*(q(id,i1)-q(id,i0))/cs(i0)
+    260         end do
+    261         a(n)=1.d0
+    262         b(n)=1.d0
+    263         c(n)=0.d0
+
+================================================================================
+TEST CASE THAT DEMONSTRATES THE BUG
+================================================================================
+
+The test program debug_circle.f90 demonstrates this bug:
+- Creates 5 points on a quarter circle
+- Uses natural boundary conditions (ispty(1)=0, ispty(2)=0)
+- Results in tangent vectors with NaN/Infinity values
+- Results in arc length computation producing NaN
+
+Note: This particular test uses natural (ispty=0), not quadratic (ispty=4),
+but the underlying issue affects any boundary condition handling.
+
+Actually, looking more carefully at the debug output, the test uses ispty(1)=0
+and ispty(2)=0 (natural spline), so this specific bug in quadratic conditions
+(ispty=4) is not triggered. However, the NaN values suggest another issue.
+
+Let me investigate further by checking if there's an uninitialized variable in
+the tridiagonal solver routines.
+
+================================================================================
+ADDITIONAL OBSERVATIONS
+================================================================================
+
+1. The "QROMBS: too many steps" warning indicates the arc length integration
+   routine is having numerical difficulties, which could be caused by:
+   - Invalid tangent vectors (which we're seeing)
+   - Numerical instability in the integration routine
+
+2. The trif/tris2 routines (tridiagonal solver) should be checked for:
+   - Uninitialized variables
+   - Array indexing errors
+   - Division by zero handling
+
+================================================================================

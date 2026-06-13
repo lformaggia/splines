@@ -1,0 +1,167 @@
+================================================================================
+FORTRAN SPLINE LIBRARY BUG FIXES - SUMMARY
+================================================================================
+
+Date: 2026-06-12
+Target: /home/forma/Dropbox/Work/ScientificComputing/Software/splines/fortran/
+
+================================================================================
+BUG #1 (CRITICAL - FIXED)
+================================================================================
+File: trcoe.f
+Line: 262
+Issue: Quadratic boundary condition at right end was assigning to wrong array element
+Original: c(1)=0.d0
+Fixed:    c(n)=0.d0
+Status:   FIXED
+
+Explanation: The quadratic boundary condition for the right end (ii2=4) was
+incorrectly setting c(1) instead of c(n). This affects the tridiagonal system
+matrix setup for the second derivative continuity condition.
+
+================================================================================
+ADDITIONAL FIX: TYPE MISMATCH IN TEST SUITE
+================================================================================
+File: test_splines.f90
+Lines: 84, 147, 209, 271, 355
+Issue: Integer type mismatch between caller and callee
+Original: integer :: i, ispty(2) or integer :: i, j, k, idx, ispt3(3, 2)
+Fixed:    separated declarations:
+          integer :: i
+          integer(kind=8) :: ispty(2)
+          
+Status:   FIXED
+
+Explanation: The test suite was declaring boundary condition arrays as 32-bit
+integers, but the Fortran subroutines (trcoe, getta3) expect 64-bit integers
+(integer*8). This type mismatch caused garbage values to be read as boundary
+condition codes, leading to incorrect tridiagonal system setup.
+
+================================================================================
+BUG #2 (HIGH PRIORITY - UNDER INVESTIGATION)
+================================================================================
+File: evps1d.f
+Issue: Potential uninitialized variables or incorrect derivative computation
+Status: PARTIALLY INVESTIGATED
+
+Analysis: Examined lines 69, 81-88 for uninitialized variable issues. The
+polynomial derivative computation uses Horner's method:
+  - Line 69: xd(id)=(ndeg-1)*xl(id,ndeg)  
+  - Loop (lines 71-76): processes derivative coefficients
+
+The initialization appears correct for standard cubic polynomial derivative
+computation. Further investigation needed to determine if this is causing
+the arc length and curvature computation errors observed in tests 1, 2, and 4.
+
+================================================================================
+BUG #3 (HIGH PRIORITY - NOT FULLY RESOLVED)
+================================================================================
+File: coeff.f, lengt.f
+Issue: Arc length computation produces 31% error for straight lines
+Status: NOT FIXED
+
+Test Results:
+- Test 2 (Straight Line 5-point): Expected 5.0, Got 6.556 (31.1% error)
+- Test 1 (Circle Arc Length): Expected 5.585, Got 6.266 (12.2% error)
+
+Investigation findings:
+- 3-point straight line arc length computes correctly (0% error)
+- 5-point and higher exhibit significant errors
+- Error increases with number of points or complexity of geometry
+- Numerical integration shows "QROMBS: too many steps" warnings
+- Tangent vectors for 5-point straight line show oscillation/instability
+
+Root cause appears to be either:
+1. Incorrect polynomial coefficient calculation in coeff.f
+2. Numerical instability in the Romberg integration (lengt.f)
+3. Incorrect tangent vector computation by evtan/trcoe
+
+This is a complex issue requiring detailed debugging of the polynomial
+coefficients and numerical integration process.
+
+================================================================================
+BUG #4 (MEDIUM PRIORITY - ANALYZED)
+================================================================================
+File: getta3.f
+Issue: Surface chord length computation incomplete
+Status: ANALYZED, NOT FIXED
+
+Analysis: Examined choret array initialization in 4 passes:
+
+Pass 1 (lines 136-174): Sets choret(2,i,j) for i=1..n, j=1..m-1
+Pass 2 (lines 178-217): Sets choret(1,i,j) for i=1..n-1, j=1..m
+Pass 3 (lines 222-264): Reads choret values (no initialization)
+Pass 4 (lines 273-296): Reads choret values (no initialization)
+
+Uninitialized elements: choret(1,n,:) and choret(2,:,m)
+These elements are never read in the code, so they don't cause immediate
+problems. However, they could lead to NaN propagation if accessed later.
+
+Recommendation: Initialize these boundary elements to 0 for safety.
+
+Test 5 (Sphere Surface) shows: "Chord lengths not properly computed"
+This failure appears to be a symptom of deeper issues in tangent/derivative
+computation rather than choret initialization.
+
+================================================================================
+TEST RESULTS AFTER FIXES
+================================================================================
+
+Test 1: Circle Arc Length
+  Status: FAILED (12.2% error)
+  Before fix: 12.2% error
+  After fix:  12.2% error (no change)
+
+Test 2: Straight Line Interpolation
+  Status: FAILED (31.1% error)
+  Before fix: 31.1% error
+  After fix:  31.1% error (no change)
+  Note: Type mismatch fix did not resolve this issue
+
+Test 3: Polynomial Curve (Parabola)
+  Status: PASSED
+  Before fix: PASSED
+  After fix:  PASSED (no change)
+
+Test 4: Circle Curvature
+  Status: FAILED (max error 1.94)
+  Before fix: FAILED (max error 1.94)
+  After fix:  FAILED (same error)
+
+Test 5: Sphere Surface
+  Status: FAILED
+  Before fix: FAILED
+  After fix:  FAILED (no change)
+
+Summary: 1/5 tests passing (Test 3)
+
+================================================================================
+REMAINING ISSUES
+================================================================================
+
+1. Arc Length Computation (Bug #3): The 31% error for straight lines indicates
+   a fundamental issue with how spline derivatives are being computed or
+   integrated. This requires systematic debugging of:
+   - Polynomial coefficient calculation
+   - Numerical integration parameters
+   - Tangent vector computation for non-uniform point distributions
+
+2. Curvature Computation (Test 4): Large errors suggest the same underlying
+   issue with derivative computation may be affecting curvature estimates.
+
+3. Surface Construction (Test 5): Failure to properly compute chord lengths
+   on surfaces may be symptomatic of the derivative computation issues.
+
+================================================================================
+FILES MODIFIED
+================================================================================
+- trcoe.f: Fixed line 262 (critical boundary condition bug)
+- test_splines.f90: Fixed integer type mismatches (4 locations)
+
+================================================================================
+COMPILATION STATUS
+================================================================================
+gfortran -Wall -Wextra -g test_splines.f90 *.f -o test_splines
+Result: SUCCESS (with 63 warnings from deprecated Fortran code)
+
+================================================================================
